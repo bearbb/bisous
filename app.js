@@ -11,6 +11,14 @@ const usersRouter = require("./routes/users");
 
 const app = express();
 app.use(passport.initialize());
+
+//using passport authenticate
+const LocalStrategy = require("passport-local").Strategy;
+const User = require("./models/user");
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 //connect to mongodb
 const connect = mongoose.connect(config.mongodb.url, {
   useNewUrlParser: true,
