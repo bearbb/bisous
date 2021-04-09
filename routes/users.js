@@ -75,6 +75,14 @@ usersRouter.post("/login", (req, res, next) => {
         req.login(user, (err) => {
           if (!err) {
             const token = authenticate.getToken(user._id);
+            res.cookie("authorization", `bearer ${token}`, {
+              signed: true,
+              secure: true,
+              httpOnly: true,
+              //TODO: set expires for this cookie
+              // expires: xxx
+            });
+            //TODO: using refresh token to get access to new token
             res.status(200).json({ message: "Log in successfully", token });
           } else {
             console.error(err);
@@ -85,5 +93,9 @@ usersRouter.post("/login", (req, res, next) => {
     })(req, res, next);
   }
 });
+
+//TODO: OAuth using facebook
+
+//TODO: OAuth using google
 
 module.exports = usersRouter;

@@ -12,13 +12,6 @@ const usersRouter = require("./routes/users");
 const app = express();
 app.use(passport.initialize());
 
-//using passport authenticate
-const LocalStrategy = require("passport-local").Strategy;
-const User = require("./models/user");
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
 //connect to mongodb
 const connect = mongoose.connect(config.mongodb.url, {
   useNewUrlParser: true,
@@ -28,10 +21,12 @@ const connect = mongoose.connect(config.mongodb.url, {
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser(config.key));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+
+const authenticate = require("./authenticate");
 
 module.exports = app;
