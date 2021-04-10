@@ -3,7 +3,7 @@ const passport = require("passport");
 const usersRouter = express.Router();
 const User = require("../models/user");
 const authenticate = require("../authenticate");
-
+const user = require("../models/user");
 //Test signup route
 
 usersRouter.post("/signup", async (req, res, next) => {
@@ -94,7 +94,42 @@ usersRouter.post("/login", (req, res, next) => {
   }
 });
 
-//TODO: OAuth using facebook
+usersRouter.get(
+  "/facebook",
+  passport.authenticate("facebook", { scope: ["email"] })
+);
+usersRouter.get(
+  "/callback",
+  passport.authenticate("facebook", {
+    scope: ["email"],
+    failureRedirect: "/failure",
+  }),
+  (req, res, next) => {
+    if (req.user) {
+      //return an cookie
+      let token = authenticate.getToken(req.user._id);
+      res.cookie("authorization", `bearer ${token}`, {
+        signed: true,
+        secure: true,
+        httpOnly: true,
+        //TODO: set expires for this cookie
+        // expires: xxx
+      });
+      res.status(200).json({
+        success: true,
+        message: "Login through facebook successfully",
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong, please try again",
+      });
+    }
+  }
+);
+usersRouter.get("/failure", (req, res) => {
+  res.status(200).json({ success: false, message: "Login unsuccessfully" });
+});
 
 //TODO: OAuth using google
 

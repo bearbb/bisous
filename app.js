@@ -11,7 +11,6 @@ const usersRouter = require("./routes/users");
 
 const app = express();
 app.use(passport.initialize());
-
 //connect to mongodb
 const connect = mongoose.connect(config.mongodb.url, {
   useNewUrlParser: true,

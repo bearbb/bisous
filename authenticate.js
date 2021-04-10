@@ -1,8 +1,11 @@
 const passport = require("passport");
+const FacebookStrategy = require("passport-facebook").Strategy;
 const User = require("./models/user");
 const JWT = require("jsonwebtoken");
 const config = require("./config");
+const FacebookTokenStrategy = require("passport-facebook-token");
 const ObjectId = require("mongoose").Types.ObjectId;
+// const FacebookPassportToken = require("passport-facebook-token");
 
 //using passport authenticate
 const LocalStrategy = require("passport-local").Strategy;
@@ -52,4 +55,47 @@ exports.verifyUser = async (req, res, next) => {
   }
 };
 
-//TODO: set up https connection
+exports.facebookPassport = passport.use(
+  new FacebookStrategy(
+    {
+      clientID: config.facebook.id,
+      clientSecret: config.facebook.secretKey,
+      callbackURL: "https://localhost:3443/users/callback",
+      profileFields: ["id", "email"],
+    },
+    (accessToken, refreshToken, profile, done) => {
+      //get that user data from profile data
+      User.findOne({ facebookId: profile.id }, (err, user) => {
+        if (err) {
+          done(err, false);
+        }
+        //no err found
+        else {
+          //no user found
+          if (user == null) {
+            console.log(profile);
+            //TODO: Ask user to enter a valid username
+            user = new User({ username: profile.id, facebookId: profile.id });
+            //check if email address is exist
+            let emailAddress = "Not an valid email";
+            if (profile.emails.length >= 1) {
+              emailAddress = profile.emails[0].value;
+            }
+            user.email = emailAddress;
+            user.save((err, user) => {
+              if (err) {
+                done(err, false);
+              } else {
+                done(null, user);
+              }
+            });
+          }
+          //found user with facebook id
+          else {
+            done(null, user);
+          }
+        }
+      });
+    }
+  )
+);
