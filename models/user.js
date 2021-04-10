@@ -8,6 +8,7 @@ const User = new Schema(
       required: true,
     },
     facebookId: String,
+    googleId: String,
     emailVerified: {
       type: Boolean,
       default: false,

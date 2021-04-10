@@ -133,4 +133,37 @@ usersRouter.get("/failure", (req, res) => {
 
 //TODO: OAuth using google
 
+usersRouter.get(
+  "/google",
+  passport.authenticate("google", { scope: ["email"] })
+);
+usersRouter.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    scope: ["email"],
+    failureRedirect: "/failure",
+  }),
+  (req, res, next) => {
+    if (req.user) {
+      //return an cookie
+      let token = authenticate.getToken(req.user._id);
+      res.cookie("authorization", `bearer ${token}`, {
+        signed: true,
+        secure: true,
+        httpOnly: true,
+        //TODO: set expires for this cookie
+        // expires: xxx
+      });
+      res.status(200).json({
+        success: true,
+        message: "Login through google successfully",
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong, please try again",
+      });
+    }
+  }
+);
 module.exports = usersRouter;

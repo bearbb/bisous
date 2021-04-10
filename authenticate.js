@@ -1,9 +1,9 @@
 const passport = require("passport");
 const FacebookStrategy = require("passport-facebook").Strategy;
+const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const User = require("./models/user");
 const JWT = require("jsonwebtoken");
 const config = require("./config");
-const FacebookTokenStrategy = require("passport-facebook-token");
 const ObjectId = require("mongoose").Types.ObjectId;
 // const FacebookPassportToken = require("passport-facebook-token");
 
@@ -58,8 +58,8 @@ exports.verifyUser = async (req, res, next) => {
 exports.facebookPassport = passport.use(
   new FacebookStrategy(
     {
-      clientID: config.facebook.id,
-      clientSecret: config.facebook.secretKey,
+      clientID: config.facebook.clientID,
+      clientSecret: config.facebook.clientSecret,
       callbackURL: "https://localhost:3443/users/callback",
       profileFields: ["id", "email"],
     },
@@ -76,6 +76,49 @@ exports.facebookPassport = passport.use(
             console.log(profile);
             //TODO: Ask user to enter a valid username
             user = new User({ username: profile.id, facebookId: profile.id });
+            //check if email address is exist
+            let emailAddress = "Not an valid email";
+            if (profile.emails.length >= 1) {
+              emailAddress = profile.emails[0].value;
+            }
+            user.email = emailAddress;
+            user.save((err, user) => {
+              if (err) {
+                done(err, false);
+              } else {
+                done(null, user);
+              }
+            });
+          }
+          //found user with facebook id
+          else {
+            done(null, user);
+          }
+        }
+      });
+    }
+  )
+);
+
+exports.googlePassport = passport.use(
+  new GoogleStrategy(
+    {
+      clientID: config.google.clientID,
+      clientSecret: config.google.clientSecret,
+      callbackURL: "https://localhost:3443/users/google/callback",
+    },
+    (request, accessToken, refreshToken, profile, done) => {
+      User.findOne({ googleId: profile.id }, (err, user) => {
+        if (err) {
+          done(err, false);
+        }
+        //no err found
+        else {
+          //no user found
+          if (user == null) {
+            console.log(profile);
+            //TODO: Ask user to enter a valid username
+            user = new User({ username: profile.id, googleId: profile.id });
             //check if email address is exist
             let emailAddress = "Not an valid email";
             if (profile.emails.length >= 1) {
