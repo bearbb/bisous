@@ -1,3 +1,4 @@
+const ObjectId = require("mongoose").Types.ObjectId;
 exports.verifyPost = (postData) => {
   let err = {};
   //check if any picture exist
@@ -11,4 +12,12 @@ exports.verifyPost = (postData) => {
     err.hashtags = "No hashtags was given";
   }
   return err;
+};
+
+exports.verifyId = (req, res, next) => {
+  if (ObjectId.isValid(req.params.postId)) {
+    next();
+  } else {
+    res.status(403).json({ success: false, message: "Not a valid id" });
+  }
 };

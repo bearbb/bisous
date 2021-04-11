@@ -7,12 +7,12 @@ const Schema = mongoose.Schema;
 //     required: true,
 //   },
 // });
-const likeSchema = new Schema({
-  author: {
-    type: Schema.ObjectId,
-    ref: "User",
-  },
-});
+// const likeSchema = new Schema({
+//   author: {
+//     type: Schema.ObjectId,
+//     ref: "User",
+//   },
+// });
 const commentSchema = new Schema({
   comment: {
     type: String,
@@ -30,7 +30,7 @@ const postSchema = new Schema(
       ref: "User",
     },
     pictures: [{ type: String, required: true }],
-    likes: [likeSchema],
+    likes: [{ type: Schema.ObjectId, ref: "User" }],
     comments: [commentSchema],
     caption: {
       type: String,
