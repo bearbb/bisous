@@ -5,7 +5,6 @@ const User = require("./models/user");
 const JWT = require("jsonwebtoken");
 const config = require("./config");
 const ObjectId = require("mongoose").Types.ObjectId;
-// const FacebookPassportToken = require("passport-facebook-token");
 
 //using passport authenticate
 const LocalStrategy = require("passport-local").Strategy;
@@ -142,3 +141,5 @@ exports.googlePassport = passport.use(
     }
   )
 );
+
+//TODO: fix callback link for facebook and google oauth
