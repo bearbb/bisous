@@ -1,10 +1,10 @@
 const express = require("express");
-const passport = require("passport");
-const User = require("../models/user");
 const Post = require("../models/post");
+const Comment = require("../models/comment");
+const Hashtag = require("../models/hashtag");
 const authenticate = require("../authenticate");
 const verify = require("../verify");
-const ObjectId = require("mongoose").Types.ObjectId;
+const utility = require("../utility");
 
 const postRouter = express.Router();
 
@@ -16,6 +16,7 @@ postRouter
       let posts = await Post.find({})
         .limit(20)
         .populate({ path: "author", select: ["username", "email"] })
+        .populate({ path: "hashtags", select: "hashtag" })
         .exec();
       res.status(200).json(posts);
     } catch (err) {
@@ -27,17 +28,20 @@ postRouter
     //check if any data is missing
     let postErr = verify.verifyPost(req.body);
     if (Object.keys(postErr).length === 0) {
+      let hashtagList = await utility.getAllHashtagIds(req.body.hashtags);
       let postData = {
         author: req.user._id,
         pictures: [...req.body.pictures],
         likes: [],
         comments: [],
         caption: req.body.caption,
-        hashtags: [...req.body.hashtags],
+        hashtags: hashtagList,
       };
       let post = new Post(postData);
       try {
         post = await post.save();
+        //loop through all hashtags to push this postId
+        await utility.addPostIdToHashtagList(post.hashtags, post._id);
         res
           .status(200)
           .json({ success: true, message: "Upload successfully", post });
@@ -62,7 +66,7 @@ postRouter
 
 postRouter
   .route("/:postId")
-  .get(verify.verifyId, async (req, res) => {
+  .get(verify.verifyPostId, async (req, res) => {
     try {
       //check if valid id
       let post = await Post.findById(req.params.postId).exec();
@@ -72,6 +76,7 @@ postRouter
         //TODO: populate likes, comments, hashtags be4 return
         post = await post
           .populate({ path: "author", select: ["username", "email"] })
+          .populate({ path: "hashtags" })
           .execPopulate();
         res.status(200).json({ success: true, post });
       } else {
@@ -90,7 +95,7 @@ postRouter
       .status(405)
       .json({ Error: "This route does not support POST operation" });
   })
-  .put(authenticate.verifyUser, verify.verifyId, async (req, res) => {
+  .put(authenticate.verifyUser, verify.verifyPostId, async (req, res) => {
     try {
       let post = await Post.findById(req.params.postId).exec();
       //check if that user is the owner
@@ -107,12 +112,20 @@ postRouter
           post.caption = req.body.caption;
         }
         if (req.body.hashtags && req.body.hashtags.length >= 1) {
-          post.hashtags = [...req.body.hashtags];
+          let oldHashtags = post.hashtags;
+          //delete all postId from hashtagDoc.postIds from old hashtags list
+          await utility.deletePostIdFromHashtagList(oldHashtags, post._id);
+          let newHashtags = await utility.getAllHashtagIds([
+            ...req.body.hashtags,
+          ]);
+          await utility.addPostIdToHashtagList(newHashtags, post._id);
+          post.hashtags = newHashtags;
         }
         post = await post.save();
         //populate be4 return
         post = await post
           .populate({ path: "author", select: ["username", "email"] })
+          .populate({ path: "hashtags", select: ["hashtag"] })
           .execPopulate();
         res
           .status(200)
@@ -125,11 +138,14 @@ postRouter
       res.status(500).json({ success: false, err });
     }
   })
-  .delete(authenticate.verifyUser, verify.verifyId, async (req, res) => {
+  .delete(authenticate.verifyUser, verify.verifyPostId, async (req, res) => {
     try {
       let post = await Post.findById(req.params.postId).exec();
       //check if that user is the owner
       if (`${post.author}` == `${req.user._id}`) {
+        //delete postId from all hashtagDoc
+        await utility.deletePostIdFromHashtagList(post.hashtags, post._id);
+        //delete postDoc
         const resp = await Post.deleteOne({ _id: post._id });
         console.log(resp);
         res.status(200).json({ success: true, message: "Delete successfully" });
@@ -144,7 +160,7 @@ postRouter
 
 postRouter
   .route("/:postId/likes")
-  .get(verify.verifyId, async (req, res) => {
+  .get(verify.verifyPostId, async (req, res) => {
     try {
       //check if valid id
       let post = await Post.findById(req.params.postId).exec();
@@ -160,7 +176,7 @@ postRouter
       });
     }
   })
-  .post(authenticate.verifyUser, verify.verifyId, async (req, res) => {
+  .post(authenticate.verifyUser, verify.verifyPostId, async (req, res) => {
     try {
       let post = await Post.findById(req.params.postId).exec();
       //check if this user is already liked it
@@ -206,7 +222,7 @@ postRouter
 
 postRouter
   .route("/:postId/unlike")
-  .post(authenticate.verifyUser, verify.verifyId, async (req, res) => {
+  .post(authenticate.verifyUser, verify.verifyPostId, async (req, res) => {
     //check if this user is liked or not
     try {
       let post = await Post.findById(req.params.postId).exec();
@@ -260,6 +276,76 @@ postRouter
     res.status(405).json({
       success: false,
       message: "This route does not support delete operation",
+    });
+  });
+postRouter
+  .route("/:postId/comments")
+  .get(verify.verifyPostId, async (req, res) => {
+    try {
+      //fetch comments on that post
+      let post = await Post.findById(req.params.postId).exec();
+      //populate be4 return
+      post = await post
+        .populate({
+          path: "comments",
+          populate: { path: "author", select: ["username", "email"] },
+        })
+        .execPopulate();
+      if (post) {
+        res.status(200).json({ success: true, comments: post.comments });
+      } else {
+        res.status(403).json({ success: false, message: "Post not found" });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong please try again",
+      });
+    }
+  })
+  .post(authenticate.verifyUser, verify.verifyPostId, async (req, res) => {
+    try {
+      //check if comment obj exist
+      if (req.body.comment) {
+        //get post
+        let post = await Post.findById(req.params.postId).exec();
+        //create new comment
+        let comment = new Comment({
+          comment: req.body.comment,
+          author: req.user._id,
+          post: req.params.postId,
+        });
+        comment = await comment.save();
+        post.comments.unshift(comment._id);
+        post = await post.save();
+        post = await post.populate("comments").execPopulate();
+        res.status(200).json({
+          success: true,
+          message: "Upload comment successfully",
+          post,
+        });
+      } else {
+        res.status(403).json({ success: false, message: "Missing data" });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong please try again",
+      });
+    }
+  })
+  .put((req, res) => {
+    res.status(405).json({
+      success: false,
+      message: "This route does not support PUT operation",
+    });
+  })
+  .delete((req, res) => {
+    res.status(405).json({
+      success: false,
+      message: "This route does not support DELETE operation",
     });
   });
 

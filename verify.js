@@ -14,8 +14,16 @@ exports.verifyPost = (postData) => {
   return err;
 };
 
-exports.verifyId = (req, res, next) => {
+exports.verifyPostId = (req, res, next) => {
   if (ObjectId.isValid(req.params.postId)) {
+    next();
+  } else {
+    res.status(403).json({ success: false, message: "Not a valid id" });
+  }
+};
+
+exports.verifyCommentId = (req, res, next) => {
+  if (ObjectId.isValid(req.params.commentId)) {
     next();
   } else {
     res.status(403).json({ success: false, message: "Not a valid id" });

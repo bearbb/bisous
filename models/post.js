@@ -7,22 +7,6 @@ const Schema = mongoose.Schema;
 //     required: true,
 //   },
 // });
-// const likeSchema = new Schema({
-//   author: {
-//     type: Schema.ObjectId,
-//     ref: "User",
-//   },
-// });
-const commentSchema = new Schema({
-  comment: {
-    type: String,
-    required: true,
-  },
-  author: {
-    type: Schema.ObjectId,
-    ref: "User",
-  },
-});
 const postSchema = new Schema(
   {
     author: {
@@ -31,15 +15,15 @@ const postSchema = new Schema(
     },
     pictures: [{ type: String, required: true }],
     likes: [{ type: Schema.ObjectId, ref: "User" }],
-    comments: [commentSchema],
+    comments: [{ type: Schema.ObjectId, ref: "Comment" }],
     caption: {
       type: String,
       default: "",
     },
     hashtags: [
       {
-        type: String,
-        default: "",
+        type: Schema.ObjectId,
+        ref: "Hashtag",
       },
     ],
   },

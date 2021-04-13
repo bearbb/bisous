@@ -9,6 +9,7 @@ const passport = require("passport");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const postRouter = require("./routes/post");
+const commentRouter = require("./routes/comment");
 
 const app = express();
 app.use(passport.initialize());
@@ -27,6 +28,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/posts/", postRouter);
+app.use("/comments", commentRouter);
 
 const authenticate = require("./authenticate");
 
