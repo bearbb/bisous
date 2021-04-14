@@ -1,4 +1,7 @@
 const Hashtag = require("./models/hashtag");
+const Post = require("./models/post");
+const Favorite = require("./models/favorite");
+const ObjectId = require("mongoose").Types.ObjectId;
 /**
  *  `getAllHashtagIds` get all hashtag._id from hashtags array in database
  * @async
@@ -83,6 +86,71 @@ async function deletePostIdFromHashtagList(hashtagList, postId) {
   let resp = await Promise.all(delPostIdFromEachHashtag);
 }
 
+/**
+ * To return an arr that contain valid postId (valid and exists)
+ * @async
+ * @param {[]} postList list contain postId to be checked
+ * @return an array contain all valid postId
+ */
+async function filterValidPostIdFromArrList(postList) {
+  let validIdArr = [];
+  //check valid id all ele in postList
+  validIdArr = postList.filter((postId) => ObjectId.isValid(postId));
+  let validDocArr = [];
+  //map async to find postDoc
+  const getValidDocArr = validIdArr.map(async (postId) => {
+    let postDoc = await Post.findById(postId).lean();
+    if (postDoc) {
+      validDocArr.push(postId);
+    }
+  });
+  await Promise.all(getValidDocArr);
+  return validDocArr;
+}
+
+/**
+ * To update favorite doc with given postIdList
+ * @async
+ * @param {[]} postList list contain postId to be update (add if not exist)
+ * @param {String} userId id of favorite owner need to be update
+ * @return favorite object
+ */
+async function updateFavoritePost(postList, userId) {
+  try {
+    let favorite = await Favorite.findOne({ author: userId }).exec();
+    //loop through all postList and find which is already exists => create new arr contain all postId not exists
+    let notExistsPostArr = postList.map((postId) => {
+      //find index in favorite.favorites
+      //index = -1 => not exists
+      let isExists =
+        favorite.favorites.findIndex(
+          (favoritePost) => `${favoritePost}` === `${postId}`
+        ) === -1
+          ? false
+          : true;
+
+      if (!isExists) {
+        return postId;
+      }
+    });
+    //filter notExistsPostArr before or this arr will contain null element
+    notExistsPostArr = notExistsPostArr.filter((ele) => {
+      if (ele == null) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+    favorite.favorites.unshift(...notExistsPostArr);
+    favorite = await favorite.save();
+    return favorite;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 exports.getAllHashtagIds = getAllHashtagIds;
 exports.addPostIdToHashtagList = addPostIdToHashtagList;
 exports.deletePostIdFromHashtagList = deletePostIdFromHashtagList;
+exports.filterValidPostIdFromArrList = filterValidPostIdFromArrList;
+exports.updateFavoritePost = updateFavoritePost;

@@ -3,7 +3,8 @@ const passport = require("passport");
 const usersRouter = express.Router();
 const User = require("../models/user");
 const authenticate = require("../authenticate");
-const user = require("../models/user");
+const Favorite = require("../models/favorite");
+const Follow = require("../models/follow");
 //Test signup route
 
 usersRouter.post("/signup", async (req, res, next) => {
@@ -23,6 +24,10 @@ usersRouter.post("/signup", async (req, res, next) => {
       new User({ username: req.body.username, email: req.body.email }),
       req.body.password
     );
+    //create new favorite and follow doc
+    const favorite = new Favorite({ author: user._id });
+    const follow = new Follow({ author: user._id });
+    await Promise.all([favorite.save(), follow.save()]);
     res.status(200).json({ message: "Signup successfully" });
   } catch (err) {
     //err code :
