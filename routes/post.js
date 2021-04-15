@@ -1,7 +1,7 @@
 const express = require("express");
 const Post = require("../models/post");
-const Comment = require("../models/comment");
-const Hashtag = require("../models/hashtag");
+// const Comment = require("../models/comment");
+// const Hashtag = require("../models/hashtag");
 const authenticate = require("../authenticate");
 const verify = require("../verify");
 const utility = require("../utility");

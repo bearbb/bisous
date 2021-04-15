@@ -44,3 +44,11 @@ exports.verifyHashtagId = (req, res, next) => {
     res.status(403).json({ success: false, message: "Not a valid id" });
   }
 };
+
+exports.verifyReceiverId = (req, res, next) => {
+  if (ObjectId.isValid(req.params.receiverId)) {
+    next();
+  } else {
+    res.status(403).json({ success: false, message: "Not a valid id" });
+  }
+};
