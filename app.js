@@ -11,6 +11,7 @@ const usersRouter = require("./routes/users");
 const postRouter = require("./routes/post");
 const commentRouter = require("./routes/comment");
 const favoriteRouter = require("./routes/favorite");
+const followRouter = require("./routes/follow");
 
 const app = express();
 app.use(passport.initialize());
@@ -31,5 +32,6 @@ app.use("/users", usersRouter);
 app.use("/posts/", postRouter);
 app.use("/comments", commentRouter);
 app.use("/favorites", favoriteRouter);
+app.use("/follows", followRouter);
 
 module.exports = app;

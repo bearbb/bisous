@@ -99,10 +99,6 @@ postRouter
     try {
       let post = await Post.findById(req.params.postId).exec();
       //check if that user is the owner
-      console.log("post author");
-      console.log(post.author);
-      console.log("user request");
-      console.log(req.user._id);
       if (`${post.author}` == `${req.user._id}`) {
         //update avail for pictures, caption, hashtags
         if (req.body.pictures && req.body.pictures.length >= 1) {
@@ -147,7 +143,6 @@ postRouter
         await utility.deletePostIdFromHashtagList(post.hashtags, post._id);
         //delete postDoc
         const resp = await Post.deleteOne({ _id: post._id });
-        console.log(resp);
         res.status(200).json({ success: true, message: "Delete successfully" });
       } else {
         res.status(401).json({ success: false, message: "Unauthorized" });
@@ -213,16 +208,7 @@ postRouter
       message: "This route does not support PUT operation",
     });
   })
-  .delete((req, res) => {
-    res.status(405).json({
-      success: false,
-      message: "This route does not support DELETE operation",
-    });
-  });
-
-postRouter
-  .route("/:postId/unlike")
-  .post(authenticate.verifyUser, verify.verifyPostId, async (req, res) => {
+  .delete(authenticate.verifyUser, verify.verifyPostId, async (req, res) => {
     //check if this user is liked or not
     try {
       let post = await Post.findById(req.params.postId).exec();
@@ -232,7 +218,6 @@ postRouter
         post.likes.findIndex((id) => `${id}` === `${req.user._id}`) === -1
           ? false
           : true;
-      console.log(isAlreadyLiked);
       if (isAlreadyLiked) {
         let index = post.likes.findIndex((id) => `${id}` === `${req.user._id}`);
         post.likes.splice(index, 1);
@@ -259,94 +244,6 @@ postRouter
         message: "Something went wrong please try again",
       });
     }
-  })
-  .get((req, res) => {
-    res.status(405).json({
-      success: false,
-      message: "This route does not support GET operation",
-    });
-  })
-  .put((req, res) => {
-    res.status(405).json({
-      success: false,
-      message: "This route does not support PUT operation",
-    });
-  })
-  .delete((req, res) => {
-    res.status(405).json({
-      success: false,
-      message: "This route does not support delete operation",
-    });
-  });
-postRouter
-  .route("/:postId/comments")
-  .get(verify.verifyPostId, async (req, res) => {
-    try {
-      //fetch comments on that post
-      let post = await Post.findById(req.params.postId).exec();
-      //populate be4 return
-      post = await post
-        .populate({
-          path: "comments",
-          populate: { path: "author", select: ["username", "email"] },
-        })
-        .execPopulate();
-      if (post) {
-        res.status(200).json({ success: true, comments: post.comments });
-      } else {
-        res.status(403).json({ success: false, message: "Post not found" });
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        success: false,
-        message: "Something went wrong please try again",
-      });
-    }
-  })
-  .post(authenticate.verifyUser, verify.verifyPostId, async (req, res) => {
-    try {
-      //check if comment obj exist
-      if (req.body.comment) {
-        //get post
-        let post = await Post.findById(req.params.postId).exec();
-        //create new comment
-        let comment = new Comment({
-          comment: req.body.comment,
-          author: req.user._id,
-          post: req.params.postId,
-        });
-        comment = await comment.save();
-        post.comments.unshift(comment._id);
-        post = await post.save();
-        post = await post.populate("comments").execPopulate();
-        res.status(200).json({
-          success: true,
-          message: "Upload comment successfully",
-          post,
-        });
-      } else {
-        res.status(403).json({ success: false, message: "Missing data" });
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        success: false,
-        message: "Something went wrong please try again",
-      });
-    }
-  })
-  .put((req, res) => {
-    res.status(405).json({
-      success: false,
-      message: "This route does not support PUT operation",
-    });
-  })
-  .delete((req, res) => {
-    res.status(405).json({
-      success: false,
-      message: "This route does not support DELETE operation",
-    });
   });
 
 module.exports = postRouter;

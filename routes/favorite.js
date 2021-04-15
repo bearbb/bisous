@@ -2,7 +2,6 @@ const express = require("express");
 const Favorite = require("../models/favorite");
 const authenticate = require("../authenticate");
 const utility = require("../utility");
-const favorite = require("../models/favorite");
 
 const favoriteRouter = express.Router();
 

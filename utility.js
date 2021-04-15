@@ -142,6 +142,7 @@ async function updateFavoritePost(postList, userId) {
       }
     });
     favorite.favorites.unshift(...notExistsPostArr);
+    // favorite.favoriteCount =
     favorite = await favorite.save();
     return favorite;
   } catch (error) {

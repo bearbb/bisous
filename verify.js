@@ -29,3 +29,11 @@ exports.verifyCommentId = (req, res, next) => {
     res.status(403).json({ success: false, message: "Not a valid id" });
   }
 };
+
+exports.verifyUserId = (req, res, next) => {
+  if (ObjectId.isValid(req.params.userId)) {
+    next();
+  } else {
+    res.status(403).json({ success: false, message: "Not a valid id" });
+  }
+};
