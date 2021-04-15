@@ -46,8 +46,6 @@ async function addPostIdToHashtagList(hashtagList, postId) {
     try {
       let hashtagDoc = await Hashtag.findById(hashtag).exec();
       hashtagDoc.postIds.unshift(postId);
-      //update postCount
-      hashtagDoc.postCount = hashtagDoc.postIds.length;
       hashtagDoc = await hashtagDoc.save();
     } catch (err) {
       console.error(err);
@@ -73,8 +71,6 @@ async function deletePostIdFromHashtagList(hashtagList, postId) {
         );
         if (index >= 0) {
           hashtagDoc.postIds.splice(index, 1);
-          //update postCount
-          hashtagDoc.postCount = hashtagDoc.postIds.length;
           hashtagDoc = await hashtagDoc.save();
         }
       }
@@ -150,8 +146,24 @@ async function updateFavoritePost(postList, userId) {
   }
 }
 
+/**
+ * A function take hashtagId to delete its doc
+ * @async
+ * @returns void
+ * @param {String} hashtagId to be deleted
+ */
+async function deleteHashtagDocWithId(hashtagId) {
+  try {
+    let deleteHashtag = await Hashtag.deleteOne({ _id: hashtagId });
+    console.log("Delete successfully");
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 exports.getAllHashtagIds = getAllHashtagIds;
 exports.addPostIdToHashtagList = addPostIdToHashtagList;
 exports.deletePostIdFromHashtagList = deletePostIdFromHashtagList;
 exports.filterValidPostIdFromArrList = filterValidPostIdFromArrList;
 exports.updateFavoritePost = updateFavoritePost;
+exports.deleteHashtagDocWithId = deleteHashtagDocWithId;

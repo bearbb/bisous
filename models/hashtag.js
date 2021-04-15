@@ -12,4 +12,10 @@ const hashtagSchema = new Schema({
     default: 1,
   },
 });
+//Middleware - auto update post count after save
+hashtagSchema.post("save", (doc) => {
+  //update post count
+  doc.postCount = doc.postIds.length;
+});
+
 module.exports = mongoose.model("Hashtag", hashtagSchema);

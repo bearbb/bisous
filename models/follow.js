@@ -17,6 +17,12 @@ const followSchema = new Schema({
     type: Number,
     default: 0,
   },
+  hashtag: [{ type: Schema.ObjectId, ref: "Hashtag" }],
+});
+//Middleware - update followingCount and followerCount
+followSchema.post("save", (doc) => {
+  doc.followerCount = doc.follower.length;
+  doc.followingCount = doc.following.length;
 });
 
 module.exports = mongoose.model("Follow", followSchema);

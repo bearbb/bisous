@@ -37,3 +37,10 @@ exports.verifyUserId = (req, res, next) => {
     res.status(403).json({ success: false, message: "Not a valid id" });
   }
 };
+exports.verifyHashtagId = (req, res, next) => {
+  if (ObjectId.isValid(req.params.hashtagId)) {
+    next();
+  } else {
+    res.status(403).json({ success: false, message: "Not a valid id" });
+  }
+};
