@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-var app = require("../app");
+var app = require("../app").app;
 var debug = require("debug")("serverside:server");
 var http = require("http");
 const fs = require("fs");
@@ -15,7 +15,7 @@ const { listen } = require("../app");
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || "3000");
+var port = normalizePort(process.env.PORT || "8000");
 app.set("port", port);
 app.set("secPort", port + 443);
 
@@ -23,28 +23,36 @@ app.set("secPort", port + 443);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+// var server = http.createServer();
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on("error", onError);
-server.on("listening", onListening);
+// server.listen(port);
+// server.on("error", onError);
+// server.on("listening", onListening);
 
 /**
  * Normalize a port into a number, string, or false.
  */
 
 // Create HTTPS server
-
 let options = {
   key: fs.readFileSync(__dirname + "/private.key"),
   cert: fs.readFileSync(__dirname + "/certificate.pem"),
 };
 
 const secureServer = https.createServer(options, app);
+
+// init socket io
+const io = require("socket.io")(secureServer, {
+  cors: {
+    origin: "https://localhost:3000",
+  },
+});
+//money line => export io in app.set()
+app.set("socketIO", io);
 
 //Listen on provided port
 secureServer.listen(app.get("secPort"), () => {
@@ -100,7 +108,9 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
+  var addr = secureServer.address();
   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
   debug("Listening on " + bind);
 }
+
+module.exports = secureServer;
