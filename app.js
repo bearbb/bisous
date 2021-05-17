@@ -17,6 +17,7 @@ const followRouter = require("./routes/follow");
 const hashtagRouter = require("./routes/hashtag");
 const messageRouter = require("./routes/message");
 const socketRouter = require("./routes/socket");
+const imageRouter = require("./routes/image");
 
 const app = express();
 
@@ -46,5 +47,6 @@ app.use("/follows", followRouter);
 app.use("/hashtags", hashtagRouter);
 app.use("/messages/", messageRouter);
 app.use("/socket", socketRouter);
+app.use("/images", imageRouter);
 
 module.exports = { app: app };

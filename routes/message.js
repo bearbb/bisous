@@ -55,6 +55,7 @@ messageRouter
       });
     }
   })
+  //fetch message from current chat attendants
   .get(authenticate.verifyUser, verify.verifyReceiverId, async (req, res) => {
     try {
       const senderID = `${req.user._id}`;
@@ -68,18 +69,79 @@ messageRouter
           chatParticipants: { $all: [senderID, receiverID] },
         })
           .select("message createdAt sender receiver -_id")
+          .sort({ createdAt: -1 })
           .populate({ path: "sender", select: "username -_id" })
           .populate({ path: "receiver", select: "username -_id" })
           .limit(10)
           .exec();
-        // messages = await messages
-        //   .populate("sender")
-        //   .populate("receiver")
-        //   .execPopulate();
         res.status(200).json({ messages });
       } else {
         res.status(403).json({ message: "Receiver not found" });
       }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong, please try again",
+      });
+    }
+  });
+messageRouter
+  .route("/t/:receiverId/:messageId")
+  //delete message route (only if the diff in min between current time and created it is less than 5)
+  .delete(authenticate.verifyUser, async (req, res) => {
+    //only able to delete message if create time is less than 5 min to current
+    try {
+      //get msgDoc
+      let msgDoc = await Message.findById(req.params.messageId).exec();
+      if (msgDoc) {
+        //check owner
+        if (req.user._id === msgDoc.author) {
+          //get msg date
+          let msgCreateAt = msgDoc.createdAt;
+          let currentDate = new Date();
+          //cal the diff of two date
+          let diff = currentDate.getTime() - msgCreateAt.getTime();
+          let diffInMin = diff / 60000;
+          //if diffInMin is less than 5 min then able to delete
+          if (diffInMin <= 5) {
+            let resp = await Message.deleteOne({
+              _id: req.params.messageId,
+            }).lean();
+            res
+              .status(200)
+              .json({ success: true, message: "Delete successfully" });
+          } else {
+            res
+              .status(403)
+              .json({ success: false, message: "Out of time range to delete" });
+          }
+        } else {
+          res.status(403).json({ success: false, message: "Unauthorized" });
+        }
+      } else {
+        res.status(403).json({ success: false, message: "Message not found" });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong, please try again",
+      });
+    }
+  });
+
+//test route to create message
+messageRouter
+  .route("/:receiverId")
+  .post(authenticate.verifyUser, async (req, res) => {
+    try {
+      let message = new Message({ message: req.body.message });
+      message.sender = req.user._id;
+      message.receiver = req.params.receiverId;
+      message.chatParticipants = [message.sender, message.receiver];
+      message = await message.save();
+      res.status(200).json({ message: "Create successfully" });
     } catch (err) {
       console.error(err);
       res.status(500).json({
