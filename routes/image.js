@@ -2,13 +2,16 @@ const express = require("express");
 const Image = require("../models/image");
 const authenticate = require("../authenticate");
 const multer = require("multer");
+const path = require("path");
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "images");
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname + "-" + Date.now());
+    let oriName = file.originalname.split(".");
+    let imgExtension = oriName[oriName.length - 1];
+    cb(null, Date.now() + "." + imgExtension);
   },
 });
 
@@ -80,5 +83,25 @@ imageRouter.route("/").post(
     }
   }
 );
+imageRouter.route("/:fileName").get((req, res, next) => {
+  const options = {
+    root: path.join("images"),
+    dotfiles: "deny",
+    headers: {
+      "x-timestamp": Date.now(),
+      "x-sent": true,
+    },
+  };
+  const fileName = req.params.fileName;
+  //TODO: check if image exist in database (img record)
+  res.sendFile(fileName, options, function (err) {
+    if (err) {
+      next(err);
+    } else {
+      console.log("Sent:", fileName);
+    }
+  });
+  // let imgPath =
+});
 
 module.exports = imageRouter;
