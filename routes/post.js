@@ -1,6 +1,6 @@
 const express = require("express");
 const Post = require("../models/post");
-// const Comment = require("../models/comment");
+const Comment = require("../models/comment");
 // const Hashtag = require("../models/hashtag");
 const authenticate = require("../authenticate");
 const verify = require("../verify");
@@ -76,7 +76,16 @@ postRouter
         //TODO: populate likes, comments, hashtags be4 return
         post = await post
           .populate({ path: "author", select: ["username", "email"] })
-          .populate({ path: "hashtags" })
+          .populate({ path: "likes", select: "username" })
+          .populate({
+            path: "hashtags",
+            select: "hashtag _id",
+          })
+          .populate({
+            path: "comments",
+            select: ["comment"],
+            populate: { path: "author", select: "username -_id" },
+          })
           .execPopulate();
         res.status(200).json({ success: true, post });
       } else {
@@ -242,6 +251,43 @@ postRouter
       res.status(500).json({
         success: false,
         message: "Something went wrong please try again",
+      });
+    }
+  });
+postRouter
+  .route("/:postId/comments")
+  .post(authenticate.verifyUser, verify.verifyPostId, async (req, res) => {
+    //create new comment type
+    try {
+      let post = await Post.findById(req.params.postId).exec();
+      //check if post exists
+      if (post) {
+        let commentDoc = new Comment({
+          comment: req.body.comment,
+          author: req.user._id,
+          post: req.params.postId,
+        });
+        commentDoc = await commentDoc.save();
+        post.comments.unshift(commentDoc);
+        post = await post.save();
+        post = await post
+          .populate({
+            path: "comments",
+            select: ["comment"],
+            populate: { path: "author", select: "username -_id" },
+          })
+          .execPopulate();
+        res
+          .status(200)
+          .json({ success: true, message: "Add comment successfully", post });
+      } else {
+        res.status(403).json({ success: false, message: "Post not found" });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong, please try again",
       });
     }
   });
