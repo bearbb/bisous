@@ -17,8 +17,10 @@ const { listen } = require("../app");
 
 var port = normalizePort(process.env.PORT || "8000");
 app.set("port", port);
-app.set("secPort", port + 696);
-var server_host = process.env.YOUR_HOST || "0.0.0.0";
+// app.set("secPort", port + 696);
+var secPort = normalizePort(process.env.PORT || "8696");
+app.set("secPort", secPort);
+var server_host = "0.0.0.0";
 app.set("host", server_host);
 
 /**
