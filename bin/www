@@ -18,6 +18,8 @@ const { listen } = require("../app");
 var port = normalizePort(process.env.PORT || "8000");
 app.set("port", port);
 app.set("secPort", port + 696);
+var server_host = process.env.YOUR_HOST || "0.0.0.0";
+app.set("host", server_host);
 
 /**
  * Create HTTP server.
@@ -55,7 +57,7 @@ const io = require("socket.io")(secureServer, {
 app.set("socketIO", io);
 
 //Listen on provided port
-secureServer.listen(app.get("secPort"), () => {
+secureServer.listen(app.get("secPort"), app.get("host"), () => {
   console.log(`Server app is listening on port: ${app.get("secPort")}`);
 });
 secureServer.on("error", onError);
