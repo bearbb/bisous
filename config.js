@@ -1,4 +1,4 @@
-const mongodbCredential = require("./secret");
+const mongodbCredential = require("./secret.js");
 const config = {
   mongodb: {
     // url: `mongodb://${mongodbCredential.username}:${mongodbCredential.password}@127.0.0.1:27017/Bisous`,
