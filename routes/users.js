@@ -82,7 +82,8 @@ usersRouter.post("/login", (req, res, next) => {
             const token = authenticate.getToken(user._id);
             res.cookie("authorization", `bearer ${token}`, {
               signed: true,
-              secure: true,
+              //TODO: enable secure for ssl connection
+              // secure: true,
               httpOnly: true,
             });
             res.status(200).json({ message: "Log in successfully", token });
@@ -112,7 +113,7 @@ usersRouter.get(
       let token = authenticate.getToken(req.user._id);
       res.cookie("authorization", `bearer ${token}`, {
         signed: true,
-        secure: true,
+        // secure: true,
         httpOnly: true,
         //TODO: set expires for this cookie
         // expires: xxx
@@ -151,7 +152,7 @@ usersRouter.get(
       let token = authenticate.getToken(req.user._id);
       res.cookie("authorization", `bearer ${token}`, {
         signed: true,
-        secure: true,
+        // secure: true,
         httpOnly: true,
         //TODO: set expires for this cookie
         // expires: xxx
