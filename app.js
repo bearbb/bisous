@@ -20,6 +20,7 @@ const socketRouter = require("./routes/socket");
 const imageRouter = require("./routes/image");
 
 const app = express();
+global.CronJob = require("./cron.js");
 
 app.use(passport.initialize());
 const corsOptions = {
@@ -27,9 +28,14 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 //connect to mongodb
-const connect = mongoose.connect(config.mongodb.url, {
+mongoose.connect(config.mongodb.url, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+});
+let db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error:"));
+db.once("open", function callback() {
+  console.log("h");
 });
 
 app.use(logger("dev"));

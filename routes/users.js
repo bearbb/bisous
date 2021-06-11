@@ -84,10 +84,7 @@ usersRouter.post("/login", (req, res, next) => {
               signed: true,
               secure: true,
               httpOnly: true,
-              //TODO: set expires for this cookie
-              // expires: xxx
             });
-            //TODO: using refresh token to get access to new token
             res.status(200).json({ message: "Log in successfully", token });
           } else {
             console.error(err);
@@ -171,4 +168,19 @@ usersRouter.get(
     }
   }
 );
+
+usersRouter.route("/").get(authenticate.verifyUser, async (req, res) => {
+  //return user data
+  try {
+    let userDoc = await User.findById(req.user._id).lean();
+    res.status(200).json({ success: true, username: userDoc.username });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong please try again",
+    });
+  }
+});
+
 module.exports = usersRouter;
