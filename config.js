@@ -1,7 +1,9 @@
 const mongodbCredential = require("./secret");
 const config = {
   mongodb: {
-    url: `mongodb://${mongodbCredential.username}:${mongodbCredential.password}@127.0.0.1:27017/Bisous`,
+    // url: `mongodb://${mongodbCredential.username}:${mongodbCredential.password}@127.0.0.1:27017/Bisous`,
+    // mongo ""
+    url: `mongodb+srv://${mongodbCredential.username}:${mongodbCredential.password}@cluster0.8vnpv.mongodb.net/myFirstDatabase`,
   },
   key: "12345-54321-67890-09876",
   facebook: {
