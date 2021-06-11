@@ -1,6 +1,7 @@
+const mongodbCredential = require("./secret");
 const config = {
   mongodb: {
-    url: "mongodb://<username>:<password>@127.0.0.1:27017/Bisous",
+    url: `mongodb://${mongodbCredential.username}:${mongodbCredential.password}@127.0.0.1:27017/Bisous`,
   },
   key: "12345-54321-67890-09876",
   facebook: {
