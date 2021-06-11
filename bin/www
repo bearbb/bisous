@@ -52,7 +52,7 @@ server.on("listening", onListening);
 // const secureServer = https.createServer(options, app);
 
 // init socket io
-const io = require("socket.io")(secureServer, {
+const io = require("socket.io")(server, {
   cors: {
     origin: "https://localhost:3000",
   },
