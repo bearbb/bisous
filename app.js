@@ -44,15 +44,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(config.key));
 // app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
-app.use("/posts/", postRouter);
-app.use("/comments", commentRouter);
-app.use("/favorites", favoriteRouter);
-app.use("/follows", followRouter);
-app.use("/hashtags", hashtagRouter);
-app.use("/messages/", messageRouter);
-app.use("/socket", socketRouter);
-app.use("/images", imageRouter);
+//app.use("/api/", indexRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/posts/", postRouter);
+app.use("/api/comments", commentRouter);
+app.use("/api/favorites", favoriteRouter);
+app.use("/api/follows", followRouter);
+app.use("/api/hashtags", hashtagRouter);
+app.use("/api/messages/", messageRouter);
+app.use("/api/socket", socketRouter);
+app.use("/api/images", imageRouter);
 
 module.exports = { app: app };
