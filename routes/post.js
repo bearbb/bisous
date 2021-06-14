@@ -195,6 +195,7 @@ postRouter
           .json({ success: false, message: "You are already liked it" });
       } else {
         post.likes.unshift(req.user._id);
+        post.likeCount = post.likeCount++;
         post = await post.save();
         post = await post
           .populate({ path: "likes", select: ["username", "email"] })
