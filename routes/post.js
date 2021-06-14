@@ -76,6 +76,7 @@ postRouter
         //if not null then populate author field
         //TODO: populate likes, comments, hashtags be4 return
         post = await post
+          .populate({ path: "pictures" })
           .populate({ path: "author", select: ["username"] })
           .populate({ path: "likes", select: "username" })
           .populate({
