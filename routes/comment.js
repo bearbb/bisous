@@ -36,6 +36,7 @@ commentRouter
   .put(authenticate.verifyUser, verify.verifyCommentId, async (req, res) => {
     try {
       let comment = await Comment.findById(req.params.commentId).exec();
+	    console.log(comment);
       if (comment) {
         //check ownership
         if (`${comment.author}` === `${req.user._id}`) {
@@ -65,18 +66,14 @@ commentRouter
     try {
       let comment = await Comment.findById(req.params.commentId).exec();
       if (comment) {
-        console.log(comment.post);
-        let postDoc = await Post.findById(comment.post).exec();
         if (`${comment.author}` === `${req.user._id}`) {
-          const resp = await Comment.deleteOne({
-            _id: req.params.commentId,
-          }).lean();
-		console.log("cmId: ", req.params.commentId);
-          let commentIndex = postDoc.comments.findIndex((cm) => 
-            cm == `${req.params.commentId}`
+          let postDoc = await Post.findById(comment.post).exec();
+          //Delete commentDoc on comments collection
+	const resp = await Comment.deleteOne({_id: comment._id});
+          let commentIndex = postDoc.comments.findIndex(
+            (cm) => cm === `${req.params.commentId}`
           );
-		console.log("Comments", postDoc.comments);
-          console.log(`Comment index ${commentIndex}`);
+          //Delete commentId on comments arr on post data
           postDoc.comments.splice(commentIndex, 1);
           postDoc = await comment.save();
           console.log(resp);
