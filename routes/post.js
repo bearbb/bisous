@@ -196,7 +196,7 @@ postRouter
           .json({ success: false, message: "You are already liked it" });
       } else {
         post.likes.unshift(req.user._id);
-        post.likeCount = post.likeCount++;
+        post.likeCount = post.likeCount + 1;
         post = await post.save();
         post = await post
           .populate({ path: "likes", select: ["username", "email"] })
@@ -232,6 +232,7 @@ postRouter
       if (isAlreadyLiked) {
         let index = post.likes.findIndex((id) => `${id}` === `${req.user._id}`);
         post.likes.splice(index, 1);
+        post.likeCount = post.likeCount - 1;
         post = await post.save();
         post = await post
           .populate({
@@ -271,6 +272,7 @@ postRouter
         });
         commentDoc = await commentDoc.save();
         post.comments.unshift(commentDoc);
+        post.commentCount = post.commentCount + 1;
         post = await post.save();
         post = await post
           .populate({
