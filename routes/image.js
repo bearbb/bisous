@@ -57,7 +57,7 @@ imageRouter.route("/").post(
           console.log("Thing going well");
           //create new Image doc on mongodb
           let imageDoc = new Image({
-            path: `images/${req.file.filename}`,
+            path: `/root/images/${req.file.filename}`,
           });
           imageDoc.author = req.user._id;
           imageDoc = await imageDoc.save();
@@ -70,7 +70,7 @@ imageRouter.route("/").post(
           } else {
             res
               .status(200)
-              .json({ success: true, message: "Upload successfully", image });
+              .json({ success: true, message: "Upload successfully", imageId: image._id });
           }
         }
       });
