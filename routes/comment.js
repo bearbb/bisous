@@ -72,7 +72,7 @@ commentRouter
             _id: req.params.commentId,
           }).lean();
           let commentIndex = postDoc.comments.findIndex((cm) => {
-            _id === commentId;
+            cm === commentId;
           });
           console.log(commentIndex);
           postDoc.comments.splice(commentIndex, 1);
