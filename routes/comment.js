@@ -67,7 +67,7 @@ commentRouter
       if (comment) {
         if (`${comment.author}` === `${req.user._id}`) {
           const resp = await Comment.deleteOne({
-            _id: req.params.postId,
+            _id: req.params.commentId,
           }).lean();
           console.log(resp);
           res
