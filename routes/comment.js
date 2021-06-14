@@ -36,6 +36,7 @@ commentRouter
   .put(authenticate.verifyUser, verify.verifyCommentId, async (req, res) => {
     try {
       let comment = await Comment.findById(req.params.commentId).exec();
+      console.log(comment);
       if (comment) {
         //check ownership
         if (`${comment.author}` === `${req.user._id}`) {
@@ -68,16 +69,13 @@ commentRouter
         if (`${comment.author}` === `${req.user._id}`) {
           let postDoc = await Post.findById(comment.post).exec();
           //Delete commentDoc on comments collection
-          await Comment.deleteOne({
-            _id: req.params.commentId,
-          }).exec();
+          const resp = await Comment.deleteOne({ _id: comment._id });
           let commentIndex = postDoc.comments.findIndex(
             (cm) => cm === `${req.params.commentId}`
           );
           //Delete commentId on comments arr on post data
           postDoc.comments.splice(commentIndex, 1);
           postDoc = await comment.save();
-          console.log(resp);
           res
             .status(200)
             .json({ success: true, message: "Delete successfully" });
