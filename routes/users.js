@@ -82,9 +82,10 @@ usersRouter.post("/login", (req, res, next) => {
             const token = authenticate.getToken(user._id);
             res.cookie("authorization", `bearer ${token}`, {
               signed: true,
+		    domain: "application.swanoogie.me",
               //TODO: enable secure for ssl connection
               secure: true,
-              httpOnly: true,
+             httpOnly: true,
             });
             res.status(200).json({ message: "Log in successfully", token });
           } else {
