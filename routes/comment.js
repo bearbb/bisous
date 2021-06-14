@@ -75,7 +75,8 @@ commentRouter
           );
           //Delete commentId on comments arr on post data
           postDoc.comments.splice(commentIndex, 1);
-          postDoc = await comment.save();
+          postDoc.commentCount = postDoc.commentCount - 1;
+          postDoc = await postDoc.save();
           res
             .status(200)
             .json({ success: true, message: "Delete successfully" });
