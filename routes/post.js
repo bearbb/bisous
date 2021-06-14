@@ -150,7 +150,7 @@ postRouter
       if (`${post.author}` == `${req.user._id}`) {
         //delete postId from all hashtagDoc
         await utility.deletePostIdFromHashtagList(post.hashtags, post._id);
-        await utility.deleteImageFromPicturesList(posts.pictures);
+        await utility.deleteImageFromPicturesList(post.pictures);
         //delete postDoc
         const resp = await Post.deleteOne({ _id: post._id });
         res.status(200).json({ success: true, message: "Delete successfully" });
