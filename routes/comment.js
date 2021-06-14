@@ -73,7 +73,7 @@ commentRouter
           }).lean();
 		console.log("cmId: ", req.params.commentId);
           let commentIndex = postDoc.comments.findIndex((cm) => 
-            cm == `${req.params.commentId}`;
+            cm == `${req.params.commentId}`
           );
 		console.log("Comments", postDoc.comments);
           console.log(`Comment index ${commentIndex}`);
