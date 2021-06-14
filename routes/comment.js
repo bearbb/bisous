@@ -65,6 +65,7 @@ commentRouter
     try {
       let comment = await Comment.findById(req.params.commentId).exec();
       if (comment) {
+        console.log(comment.post);
         let postDoc = await Post.findById(comment.post).exec();
         if (`${comment.author}` === `${req.user._id}`) {
           const resp = await Comment.deleteOne({
@@ -73,6 +74,7 @@ commentRouter
           let commentIndex = postDoc.comments.findIndex((cm) => {
             _id === commentId;
           });
+          console.log(commentIndex);
           postDoc.comments.splice(commentIndex, 1);
           postDoc = await comment.save();
           console.log(resp);
