@@ -110,6 +110,8 @@ imageRouter.route("/:imageId").get(async (req, res, next) => {
           console.log("Sent:", fileName);
         }
       });
+    } else {
+      res.status(403).json({ success: false, message: "Document not existed" });
     }
   } catch (err) {
     console.error(err);
