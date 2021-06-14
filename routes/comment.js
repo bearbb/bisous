@@ -65,16 +65,16 @@ commentRouter
     try {
       let comment = await Comment.findById(req.params.commentId).exec();
       if (comment) {
-        console.log(comment.post);
-        let postDoc = await Post.findById(comment.post).exec();
         if (`${comment.author}` === `${req.user._id}`) {
+          let postDoc = await Post.findById(comment.post).exec();
+          //Delete commentDoc on comments collection
           const resp = await Comment.deleteOne({
             _id: req.params.commentId,
           }).lean();
-          let commentIndex = postDoc.comments.findIndex((cm) => {
-            cm === req.params.commentId;
-          });
-          console.log(commentIndex);
+          let commentIndex = postDoc.comments.findIndex(
+            (cm) => cm === `${req.params.commentId}`
+          );
+          //Delete commentId on comments arr on post data
           postDoc.comments.splice(commentIndex, 1);
           postDoc = await comment.save();
           console.log(resp);
