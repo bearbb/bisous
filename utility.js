@@ -1,3 +1,4 @@
+const Image = require("./models/image");
 const Hashtag = require("./models/hashtag");
 const Post = require("./models/post");
 const Favorite = require("./models/favorite");
@@ -80,6 +81,22 @@ async function deletePostIdFromHashtagList(hashtagList, postId) {
   });
 
   let resp = await Promise.all(delPostIdFromEachHashtag);
+}
+async function deleteImageFromPicturesList(picturesList) {
+  const delImgFromEachPicture = picturesList.map(async (imgId) => {
+    try {
+      let imgDoc = await Image.findById(imgId).exec();
+      //if exist
+      if (imgDoc) {
+        let delRes = await Image.deleteOne({ _id: imgId });
+      } else {
+        console.log("Doc not found");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  });
+  let resp = await Promise.all(delImgFromEachPicture);
 }
 
 /**
@@ -167,3 +184,4 @@ exports.deletePostIdFromHashtagList = deletePostIdFromHashtagList;
 exports.filterValidPostIdFromArrList = filterValidPostIdFromArrList;
 exports.updateFavoritePost = updateFavoritePost;
 exports.deleteHashtagDocWithId = deleteHashtagDocWithId;
+exports.deleteImageFromPicturesList = deleteImageFromPicturesList;
