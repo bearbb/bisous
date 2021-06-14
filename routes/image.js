@@ -68,9 +68,11 @@ imageRouter.route("/").post(
               .status(500)
               .json({ success: false, message: "Something wrong" });
           } else {
-            res
-              .status(200)
-              .json({ success: true, message: "Upload successfully", imageId: image._id });
+            res.status(200).json({
+              success: true,
+              message: "Upload successfully",
+              imageId: image._id,
+            });
           }
         }
       });
@@ -83,24 +85,40 @@ imageRouter.route("/").post(
     }
   }
 );
-imageRouter.route("/:fileName").get((req, res, next) => {
-  const options = {
-    root: path.join("images"),
-    dotfiles: "deny",
-    headers: {
-      "x-timestamp": Date.now(),
-      "x-sent": true,
-    },
-  };
-  const fileName = req.params.fileName;
-  //TODO: check if image exist in database (img record)
-  res.sendFile(fileName, options, function (err) {
-    if (err) {
-      next(err);
-    } else {
-      console.log("Sent:", fileName);
+imageRouter.route("/:imageId").get(async (req, res, next) => {
+  try {
+    const options = {
+      root: "images",
+      dotfiles: "deny",
+      headers: {
+        "x-timestamp": Date.now(),
+        "x-sent": true,
+      },
+    };
+    //get image doc
+    let imgDoc = await Image.findById(req.params.imageId).lean();
+    if (imgDoc) {
+      // const fileName = req.params.fileName;
+      const path = imgDoc.path;
+      const fileName = path.split("/")[1];
+      // res.status(200).json({ path });
+      //TODO: check if image exist in database (img record)
+      res.sendFile(fileName, options, function (err) {
+        if (err) {
+          next(err);
+        } else {
+          console.log("Sent:", fileName);
+        }
+      });
     }
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Something went wrong, please try again",
+      success: false,
+    });
+  }
+
   // let imgPath =
 });
 

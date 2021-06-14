@@ -16,6 +16,7 @@ postRouter
       let posts = await Post.find({})
         .limit(20)
         .populate({ path: "author", select: ["username", "email"] })
+        .populate({ path: "pictures" })
         .populate({ path: "hashtags", select: "hashtag" })
         .exec();
       res.status(200).json(posts);

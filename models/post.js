@@ -6,7 +6,8 @@ const postSchema = new Schema(
       type: Schema.ObjectId,
       ref: "User",
     },
-    pictures: [{ type: String, required: true }],
+    //TODO: change to object types
+    pictures: [{ type: Schema.ObjectId, ref: "Image", required: true }],
     likes: [{ type: Schema.ObjectId, ref: "User" }],
     likeCount: {
       type: Number,
