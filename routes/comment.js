@@ -68,9 +68,9 @@ commentRouter
         if (`${comment.author}` === `${req.user._id}`) {
           let postDoc = await Post.findById(comment.post).exec();
           //Delete commentDoc on comments collection
-          const resp = await Comment.deleteOne({
+          await Comment.deleteOne({
             _id: req.params.commentId,
-          }).lean();
+          }).exec();
           let commentIndex = postDoc.comments.findIndex(
             (cm) => cm === `${req.params.commentId}`
           );
