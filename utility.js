@@ -3,6 +3,7 @@ const Hashtag = require("./models/hashtag");
 const Post = require("./models/post");
 const Favorite = require("./models/favorite");
 const ObjectId = require("mongoose").Types.ObjectId;
+const { exec } = require("child_process");
 /**
  *  `getAllHashtagIds` get all hashtag._id from hashtags array in database
  * @async
@@ -88,7 +89,23 @@ async function deleteImageFromPicturesList(picturesList) {
       let imgDoc = await Image.findById(imgId).exec();
       //if exist
       if (imgDoc) {
+        let fileName = imgDoc.path.split("/")[1];
         let delRes = await Image.deleteOne({ _id: imgId });
+        //TODO: Delete image in images directory
+        exec(
+          `cd /root/bisous/images; rm ${fileName}`,
+          (error, stdout, stderr) => {
+            if (error) {
+              console.log(error.message);
+              return;
+            }
+            if (stderr) {
+              console.log(stderr);
+              return;
+            }
+            console.log(stdout);
+          }
+        );
       } else {
         console.log("Doc not found");
       }
