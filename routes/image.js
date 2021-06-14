@@ -57,7 +57,7 @@ imageRouter.route("/").post(
           console.log("Thing going well");
           //create new Image doc on mongodb
           let imageDoc = new Image({
-            path: `/root/images/${req.file.filename}`,
+            path: `images/${req.file.filename}`,
           });
           imageDoc.author = req.user._id;
           imageDoc = await imageDoc.save();
@@ -101,7 +101,6 @@ imageRouter.route("/:fileName").get((req, res, next) => {
       console.log("Sent:", fileName);
     }
   });
-  // let imgPath =
 });
 
 module.exports = imageRouter;
