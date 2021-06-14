@@ -69,6 +69,11 @@ commentRouter
           const resp = await Comment.deleteOne({
             _id: req.params.commentId,
           }).lean();
+          let commentIndex = comment.comments.findIndex((cm) => {
+            _id === commentId;
+          });
+          comment.comments.splice(commentIndex, 1);
+          comment = await comment.save();
           console.log(resp);
           res
             .status(200)
