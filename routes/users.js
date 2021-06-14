@@ -5,6 +5,7 @@ const User = require("../models/user");
 const authenticate = require("../authenticate");
 const Favorite = require("../models/favorite");
 const Follow = require("../models/follow");
+const { response } = require("express");
 //Test signup route
 
 usersRouter.post("/signup", async (req, res, next) => {
@@ -95,6 +96,20 @@ usersRouter.post("/login", (req, res, next) => {
         });
       }
     })(req, res, next);
+  }
+});
+usersRouter.get("/logout", authenticate.verifyUser, async (req, res) => {
+  try {
+    res.clearCookie("authorization");
+    res.status(200).json({ success: true, message: "Logout successfully" });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({
+        message: "Something went wrong please try again",
+        success: false,
+      });
   }
 });
 
