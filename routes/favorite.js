@@ -10,7 +10,7 @@ favoriteRouter
   .get(authenticate.verifyUser, async (req, res) => {
     try {
       let favorite = await Favorite.findOne({ author: req.user._id }).exec();
-      favorite = await favorite.populate({ path: "favorites" }).execPopulate();
+      //favorite = await favorite.populate({ path: "favorites" }).execPopulate();
       res.status(200).json({ success: true, favorite });
     } catch (error) {
       console.error(error);
