@@ -7,13 +7,13 @@ const Favorite = require("../models/favorite");
 const Follow = require("../models/follow");
 const { response } = require("express");
 const cookieOptions = {
-              	signed: true,
-	   	domain: "application.swanoogie.me",
-              //TODO: enable secure for ssl connection
-              	secure: true,
-             	httpOnly: true,
-		sameSite: "None"
-}
+  signed: true,
+  domain: "application.swanoogie.me",
+  //TODO: enable secure for ssl connection
+  secure: true,
+  httpOnly: true,
+  sameSite: "None",
+};
 
 //Test signup route
 
@@ -90,14 +90,14 @@ usersRouter.post("/login", (req, res, next) => {
         req.login(user, (err) => {
           if (!err) {
             const token = authenticate.getToken(user._id);
-	/*            res.cookie("authorization", `bearer ${token}`, {
+            /*            res.cookie("authorization", `bearer ${token}`, {
               signed: true,
 		    domain: "application.swanoogie.me",
               //TODO: enable secure for ssl connection
               secure: true,
              httpOnly: true,
             }); */
-		  res.cookie("authorization", `bearer ${token}`, cookieOptions);
+            res.cookie("authorization", `bearer ${token}`, cookieOptions);
             res.status(200).json({ message: "Log in successfully", token });
           } else {
             console.error(err);
@@ -110,17 +110,15 @@ usersRouter.post("/login", (req, res, next) => {
 });
 usersRouter.get("/logout", authenticate.verifyUser, async (req, res) => {
   try {
-/*    res.clearCookie("authorization", {signed: true, secure: true, domain:"application.swanoogie.me" , httpOnly:true, sameSite:"None"}); */
-	  res.clearCookie("authorization", cookieOptions);
+    /*    res.clearCookie("authorization", {signed: true, secure: true, domain:"application.swanoogie.me" , httpOnly:true, sameSite:"None"}); */
+    res.clearCookie("authorization", cookieOptions);
     res.status(200).json({ success: true, message: "Logout successfully" });
   } catch (err) {
     console.error(err);
-    res
-      .status(500)
-      .json({
-        message: "Something went wrong please try again",
-        success: false,
-      });
+    res.status(500).json({
+      message: "Something went wrong please try again",
+      success: false,
+    });
   }
 });
 
@@ -142,7 +140,7 @@ usersRouter.get(
         signed: true,
         secure: true,
         httpOnly: true,
-	sameSite: "None",
+        sameSite: "None",
         //TODO: set expires for this cookie
         // expires: xxx
       });
@@ -202,7 +200,9 @@ usersRouter.route("/").get(authenticate.verifyUser, async (req, res) => {
   //return user data
   try {
     let userDoc = await User.findById(req.user._id).lean();
-    res.status(200).json({ success: true, username: userDoc.username , userId: userDoc._id});
+    res
+      .status(200)
+      .json({ success: true, username: userDoc.username, userId: userDoc._id });
   } catch (error) {
     console.error(error);
     res.status(500).json({
