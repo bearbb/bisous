@@ -12,7 +12,7 @@ const cookieOptions = {
               //TODO: enable secure for ssl connection
               	secure: true,
              	httpOnly: true,
-		sameSite: "None"
+		sameSite: "none"
 }
 
 //Test signup route
