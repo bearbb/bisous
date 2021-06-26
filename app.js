@@ -23,25 +23,24 @@ const app = express();
 global.CronJob = require("./cron.js");
 
 app.use(passport.initialize());
-const whiteList = ["https://swanoogie.me", "http://localhost:3000" ];
+const whiteList = ["https://swanoogie.me", "http://localhost:3000"];
 const corsOptions1 = {
-	origin: "http://localhost:3000",
-	credentials: true
-}
+  origin: "http://localhost:3000",
+  credentials: true,
+};
 const corsOptions2 = {
-	origin: "https://swanoogie.me",
-	credentials: true
-}
+  origin: "https://swanoogie.me",
+  credentials: true,
+};
 const corsOptions = {
-	origin: function (origin, callback){
-		if(whiteList.indexOf(origin) !== -1){
-			callback(null, true)
-		}
-		else{
-			callback(new Error("Not allowed by CORS"))
-		}
-	},
-	credentials: true
+  origin: function (origin, callback) {
+    if (whiteList.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
 };
 app.use(cors(corsOptions1));
 //connect to mongodb

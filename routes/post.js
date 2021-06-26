@@ -1,5 +1,6 @@
 const express = require("express");
 const Post = require("../models/post");
+const User = require("../models/user");
 const Comment = require("../models/comment");
 // const Hashtag = require("../models/hashtag");
 const authenticate = require("../authenticate");
@@ -42,6 +43,9 @@ postRouter
         post = await post.save();
         //loop through all hashtags to push this postId
         await utility.addPostIdToHashtagList(post.hashtags, post._id);
+        let userDoc = await User.findById(req.user._id);
+        userDoc.posts.unshift(post._id);
+        userDoc = await userDoc.save();
         res
           .status(200)
           .json({ success: true, message: "Upload successfully", post });
@@ -146,11 +150,15 @@ postRouter
   .delete(authenticate.verifyUser, verify.verifyPostId, async (req, res) => {
     try {
       let post = await Post.findById(req.params.postId).exec();
+      let userDoc = await User.findById(req.user._id);
       //check if that user is the owner
       if (`${post.author}` == `${req.user._id}`) {
         //delete postId from all hashtagDoc
         await utility.deletePostIdFromHashtagList(post.hashtags, post._id);
         await utility.deleteImageFromPicturesList(post.pictures);
+        let postIndex = userDoc.posts.findIndex((postId) => postId == post._id);
+        userDoc.posts.splice(postIndex, 1);
+        userDoc = await userDoc.save();
         //delete postDoc
         const resp = await Post.deleteOne({ _id: post._id });
         res.status(200).json({ success: true, message: "Delete successfully" });

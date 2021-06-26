@@ -31,7 +31,11 @@ usersRouter.post("/signup", async (req, res, next) => {
       throw err;
     }
     const user = await User.register(
-      new User({ username: req.body.username, email: req.body.email }),
+      new User({
+        username: req.body.username,
+        email: req.body.email,
+        posts: [],
+      }),
       req.body.password
     );
     //create new favorite and follow doc
@@ -212,4 +216,19 @@ usersRouter.route("/").get(authenticate.verifyUser, async (req, res) => {
   }
 });
 
+usersRouter.route("/posts").get(authenticate.verifyUser, async (req, res) => {
+  //return posts array contain all postId by this user
+  try {
+    let userDoc = await User.findById(req.user._id).lean();
+    if (userDoc) {
+      res.status(200).json({ success: true, posts: userDoc.posts });
+    }
+  } catch (er) {
+    console.error(er);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong please try again",
+    });
+  }
+});
 module.exports = usersRouter;

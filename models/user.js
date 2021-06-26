@@ -27,6 +27,7 @@ const User = new Schema(
       type: String,
       default: "",
     },
+    posts: [{ type: String }],
   },
   { timestamps: true }
 );
