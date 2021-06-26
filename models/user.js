@@ -28,6 +28,10 @@ const User = new Schema(
       default: "",
     },
     posts: [{ type: String }],
+    postCount: {
+      type: number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
