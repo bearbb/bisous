@@ -6,6 +6,7 @@ const authenticate = require("../authenticate");
 const Favorite = require("../models/favorite");
 const Follow = require("../models/follow");
 const { response } = require("express");
+const verify = require("../verify");
 const cookieOptions = {
   signed: true,
   domain: "application.swanoogie.me",
@@ -204,14 +205,12 @@ usersRouter.route("/").get(authenticate.verifyUser, async (req, res) => {
   //return user data
   try {
     let userDoc = await User.findById(req.user._id).lean();
-    res
-      .status(200)
-      .json({
-        success: true,
-        username: userDoc.username,
-        userId: userDoc._id,
-        postCount: userDoc.postCount,
-      });
+    res.status(200).json({
+      success: true,
+      username: userDoc.username,
+      userId: userDoc._id,
+      postCount: userDoc.postCount,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -239,6 +238,34 @@ usersRouter
       res.status(500).json({
         success: false,
         message: "Something went wrong please try again",
+      });
+    }
+  });
+
+usersRouter
+  .route("/:userId")
+  .get(authenticate.verifyUser, verify.verifyUser, async (req, res) => {
+    //return username and user description
+    try {
+      let userDoc = await User.findById(req.params.userId).lean();
+      if (userDoc) {
+        res.status(200).json({
+          success: true,
+          userDoc: {
+            username: userDoc.username,
+          },
+        });
+      } else {
+        res.status(403).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong, pls try again",
       });
     }
   });
