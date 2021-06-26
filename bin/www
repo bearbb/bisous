@@ -54,7 +54,7 @@ const secureServer = https.createServer(options, app);
 // init socket io
 const io = require("socket.io")(secureServer, {
   cors: {
-    origin: "https://localhost:3000",
+    origin: "http://localhost:3000",
   },
 });
 //money line => export io in app.set()

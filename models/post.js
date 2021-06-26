@@ -33,8 +33,8 @@ const postSchema = new Schema(
 );
 
 //Middleware - update like/commentCount after save
- postSchema.post("save", (doc) => {
-   doc.likeCount = doc.likes.length;
-   doc.commentCount = doc.comments.length;
- });
+postSchema.post("save", (doc) => {
+  doc.likeCount = doc.likes.length;
+  doc.commentCount = doc.comments.length;
+});
 module.exports = mongoose.model("Post", postSchema);
