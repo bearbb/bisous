@@ -29,7 +29,7 @@ const User = new Schema(
     },
     posts: [{ type: String }],
     postCount: {
-      type: number,
+      type: Number,
       default: 0,
     },
   },
