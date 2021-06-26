@@ -206,7 +206,12 @@ usersRouter.route("/").get(authenticate.verifyUser, async (req, res) => {
     let userDoc = await User.findById(req.user._id).lean();
     res
       .status(200)
-      .json({ success: true, username: userDoc.username, userId: userDoc._id });
+      .json({
+        success: true,
+        username: userDoc.username,
+        userId: userDoc._id,
+        postCount: userDoc.postCount,
+      });
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -223,7 +228,11 @@ usersRouter
     try {
       let userDoc = await User.findById(req.params.userId).lean();
       if (userDoc) {
-        res.status(200).json({ success: true, posts: userDoc.posts });
+        res.status(200).json({
+          success: true,
+          posts: userDoc.posts,
+          postCount: userDoc.postCount,
+        });
       }
     } catch (er) {
       console.error(er);
