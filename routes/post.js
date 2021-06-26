@@ -45,6 +45,8 @@ postRouter
         await utility.addPostIdToHashtagList(post.hashtags, post._id);
         let userDoc = await User.findById(req.user._id);
         userDoc.posts.unshift(post._id);
+        let temp = userDoc.postCount;
+        userDoc.postCount = temp + 1;
         userDoc = await userDoc.save();
         res
           .status(200)
@@ -158,6 +160,8 @@ postRouter
         await utility.deleteImageFromPicturesList(post.pictures);
         let postIndex = userDoc.posts.findIndex((postId) => postId == post._id);
         userDoc.posts.splice(postIndex, 1);
+        let temp = userDoc.postCount;
+        userDoc.postCount = temp - 1;
         userDoc = await userDoc.save();
         //delete postDoc
         const resp = await Post.deleteOne({ _id: post._id });

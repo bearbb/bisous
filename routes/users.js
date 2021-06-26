@@ -216,19 +216,21 @@ usersRouter.route("/").get(authenticate.verifyUser, async (req, res) => {
   }
 });
 
-usersRouter.route("/posts").get(authenticate.verifyUser, async (req, res) => {
-  //return posts array contain all postId by this user
-  try {
-    let userDoc = await User.findById(req.user._id).lean();
-    if (userDoc) {
-      res.status(200).json({ success: true, posts: userDoc.posts });
+usersRouter
+  .route("/:userId/posts")
+  .get(authenticate.verifyUser, async (req, res) => {
+    //return posts array contain all postId by this user
+    try {
+      let userDoc = await User.findById(req.params.userId).lean();
+      if (userDoc) {
+        res.status(200).json({ success: true, posts: userDoc.posts });
+      }
+    } catch (er) {
+      console.error(er);
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong please try again",
+      });
     }
-  } catch (er) {
-    console.error(er);
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong please try again",
-    });
-  }
-});
+  });
 module.exports = usersRouter;
