@@ -142,7 +142,7 @@ followRouter
         if (followingIndex !== -1 && beingFollowedIndex !== -1) {
           beingFollowedDoc.follower.splice(beingFollowedIndex, 1);
           //update follower count
-           beingFollowedDoc.followerCount = beingFollowedDoc.follower.length;
+          beingFollowedDoc.followerCount = beingFollowedDoc.follower.length;
 
           followDoc.following.splice(followingIndex, 1);
           //update following count
