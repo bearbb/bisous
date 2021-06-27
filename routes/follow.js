@@ -82,7 +82,7 @@ followRouter
         if (!(followingIndex !== -1) && !(beingFollowedIndex !== -1)) {
           beingFollowedDoc.follower.unshift(req.user._id);
           //update follower count
-          // beingFollowedDoc.followerCount = beingFollowedDoc.follower.length;
+          beingFollowedDoc.followerCount = beingFollowedDoc.follower.length;
           followDoc.following.unshift(req.params.userId);
           // update following count
           followDoc.followingCount = followDoc.following.length;
@@ -142,11 +142,11 @@ followRouter
         if (followingIndex !== -1 && beingFollowedIndex !== -1) {
           beingFollowedDoc.follower.splice(beingFollowedIndex, 1);
           //update follower count
-          // beingFollowedDoc.followerCount = beingFollowedDoc.follower.length;
+          beingFollowedDoc.followerCount = beingFollowedDoc.follower.length;
 
           followDoc.following.splice(followingIndex, 1);
           //update following count
-          // followDoc.followingCount = followDoc.following.length;
+          followDoc.followingCount = followDoc.following.length;
           //save both in parallel
           await Promise.all([followDoc.save(), beingFollowedDoc.save()]);
           res.status(200).json({
