@@ -15,6 +15,7 @@ postRouter
   .get(async (req, res, next) => {
     try {
       let posts = await Post.find({})
+        .sort({ createdAt: -1 })
         .limit(20)
         .populate({ path: "author", select: ["username", "email"] })
         .populate({ path: "hashtags", select: "hashtag" })
