@@ -244,7 +244,7 @@ usersRouter
 
 usersRouter
   .route("/:userId")
-  .get(authenticate.verifyUser, verify.verifyUser, async (req, res) => {
+  .get(authenticate.verifyUser, verify.verifyUserId, async (req, res) => {
     //return username and user description
     try {
       let userDoc = await User.findById(req.params.userId).lean();
