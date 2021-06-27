@@ -84,8 +84,8 @@ followRouter
           //update follower count
           // beingFollowedDoc.followerCount = beingFollowedDoc.follower.length;
           followDoc.following.unshift(req.params.userId);
-          //update following count
-          // followDoc.followingCount = followDoc.following.length;
+          // update following count
+          followDoc.followingCount = followDoc.following.length;
           //save both in parallel
           await Promise.all([followDoc.save(), beingFollowedDoc.save()]);
           res
