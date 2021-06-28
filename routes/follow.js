@@ -47,10 +47,26 @@ followRouter
 
 followRouter
   .route("/:userId")
-  .get((req, res) => {
-    res
-      .status(405)
-      .json({ Error: "This route does not support GET operation" });
+  .get(verify.verifyUserId, async (req, res) => {
+    try {
+      let followDoc = await Follow.findOne({
+        author: req.params.userId,
+      }).exec();
+      if (followDoc) {
+        //populate followDoc be4 return
+        followDoc = await followDoc
+          .populate({ path: "following", select: ["username"] })
+          .populate({ path: "follower", select: ["username"] })
+          .execPopulate();
+        res.status(200).json({ success: true, followDoc });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong, please try again",
+      });
+    }
   })
   .post(authenticate.verifyUser, verify.verifyUserId, async (req, res) => {
     try {
