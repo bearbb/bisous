@@ -15,6 +15,9 @@ searchRouter
       let userDoc = await User.find({
         $text: { $search: `${req.params.searchContent}` },
       });
+      let userData = userDoc.map((obj) => {
+        return { username: obj.username, userId: obj._id };
+      });
       let postDoc = await Post.find({
         $text: { $search: `${req.params.searchContent}` },
       })
@@ -24,8 +27,8 @@ searchRouter
         .populate({ path: "hashtags", select: "hashtag" })
         .exec();
       res.status(200).json({
-        //user: { username: userDoc.username, userId: userDoc._id },
-	userDoc,
+        // user: { username: userDoc.username, userId: userDoc._id },
+        userData,
         //TODO: return user avatar
         postDoc,
       });
