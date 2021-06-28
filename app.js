@@ -18,6 +18,7 @@ const hashtagRouter = require("./routes/hashtag");
 const messageRouter = require("./routes/message");
 const socketRouter = require("./routes/socket");
 const imageRouter = require("./routes/image");
+const searchRouter = require("./routes/search");
 
 const app = express();
 global.CronJob = require("./cron.js");
@@ -70,5 +71,6 @@ app.use("/api/hashtags", hashtagRouter);
 app.use("/api/messages/", messageRouter);
 app.use("/api/socket", socketRouter);
 app.use("/api/images", imageRouter);
+app.use("/api/search", searchRouter);
 
 module.exports = { app: app };
