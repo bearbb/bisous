@@ -4,8 +4,6 @@ const User = require("../models/user");
 const Comment = require("../models/comment");
 // const Hashtag = require("../models/hashtag");
 const authenticate = require("../authenticate");
-const verify = require("../verify");
-const utility = require("../utility");
 
 const searchRouter = express.Router();
 
@@ -19,8 +17,17 @@ searchRouter
       });
       let postDoc = await Post.find({
         $text: { $search: `${req.params.searchContent}` },
+      })
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .populate({ path: "author", select: ["username", "email"] })
+        .populate({ path: "hashtags", select: "hashtag" })
+        .exec();
+      res.status(200).json({
+        user: { username: userDoc.username, userId: userDoc._id },
+        //TODO: return user avatar
+        postDoc,
       });
-      res.status(200).json({ userDoc, postDoc });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Something went wrong, pls try again" });
