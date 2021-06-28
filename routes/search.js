@@ -24,7 +24,8 @@ searchRouter
         .populate({ path: "hashtags", select: "hashtag" })
         .exec();
       res.status(200).json({
-        user: { username: userDoc.username, userId: userDoc._id },
+        //user: { username: userDoc.username, userId: userDoc._id },
+	userDoc,
         //TODO: return user avatar
         postDoc,
       });
