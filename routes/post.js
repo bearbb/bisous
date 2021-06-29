@@ -17,7 +17,7 @@ postRouter
       let posts = await Post.find({})
         .sort({ createdAt: -1 })
         .limit(20)
-        .populate({ path: "author", select: ["username", "email"] })
+        .populate({ path: "author", select: ["username", "email", "avatar"] })
         .populate({ path: "hashtags", select: "hashtag" })
         .exec();
       res.status(200).json(posts);
@@ -91,7 +91,7 @@ postRouter
           .populate({
             path: "comments",
             select: ["comment"],
-            populate: { path: "author", select: "username -_id" },
+            populate: { path: "author", select: "username -_id avatar" },
           })
           .execPopulate();
         res.status(200).json({ success: true, post });
