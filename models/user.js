@@ -32,6 +32,10 @@ const User = new Schema(
       type: Number,
       default: 0,
     },
+    avatar: {
+      type: String,
+      default: "60dac0a31fc8b842473cd857",
+    },
   },
   { timestamps: true }
 );

@@ -2,6 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const usersRouter = express.Router();
 const User = require("../models/user");
+const Image = require("../models/image");
 const authenticate = require("../authenticate");
 const Favorite = require("../models/favorite");
 const Follow = require("../models/follow");
@@ -269,4 +270,28 @@ usersRouter
       });
     }
   });
+usersRouter.route("/avatar").post(authenticate.verifyUser, async (req, res) => {
+  try {
+    //check if image doc existed
+    let imageDoc = await Image.findById(req.body.imageId).exec();
+    if (imageDoc) {
+      //get user doc
+      let userDoc = await User.findById(req.user._id).exec();
+      //update user avatar with new image id
+      //TODO: remove old image doc
+      userDoc.avatar = req.body.imageId;
+      userDoc = await userDoc.save();
+      res
+        .status(200)
+        .json({ success: true, message: "Change avatar successfully" });
+    } else {
+      res.status(400).json({ success: false, message: "Invalid image id" });
+    }
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ message: "Something went wrong, pls try again", success: false });
+  }
+});
 module.exports = usersRouter;
