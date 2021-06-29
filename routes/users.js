@@ -211,6 +211,7 @@ usersRouter.route("/").get(authenticate.verifyUser, async (req, res) => {
       username: userDoc.username,
       userId: userDoc._id,
       postCount: userDoc.postCount,
+      avatar: userDoc.avatar,
     });
   } catch (error) {
     console.error(error);
@@ -254,6 +255,7 @@ usersRouter
           success: true,
           userDoc: {
             username: userDoc.username,
+            avatar: userDoc.avatar,
           },
         });
       } else {
