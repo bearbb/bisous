@@ -256,6 +256,7 @@ usersRouter
           userDoc: {
             username: userDoc.username,
             avatar: userDoc.avatar,
+            bio: userDoc.description,
           },
         });
       } else {
@@ -296,4 +297,32 @@ usersRouter.route("/avatar").post(authenticate.verifyUser, async (req, res) => {
       .json({ message: "Something went wrong, pls try again", success: false });
   }
 });
+usersRouter
+  .route("/bio")
+  .get(authenticate.verifyUser, async (req, res) => {
+    try {
+      let userDoc = await User.findById(req.user._id).lean();
+      res.status(200).json({ success: true, bio: userDoc.description });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong, pls try again",
+      });
+    }
+  })
+  .post(authenticate.verifyUser, async (req, res) => {
+    try {
+      let userDoc = await User.findById(req.user._id).exec();
+      userDoc.description = req.body.bio.toString();
+      userDoc = await userDoc.save();
+      res.status(200).json({ success: true, userDoc });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong, pls try again",
+      });
+    }
+  });
 module.exports = usersRouter;
