@@ -17,7 +17,7 @@ searchRouter
       });
       let userData = userDoc.map((obj) => {
         //TODO: return user avatar
-        return { username: obj.username, userId: obj._id };
+        return { username: obj.username, userId: obj._id, avatar: obj.avatar };
       });
       let postDoc = await Post.find({
         $text: { $search: `${req.params.searchContent}` },
