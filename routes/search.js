@@ -24,7 +24,7 @@ searchRouter
       })
         .sort({ createdAt: -1 })
         .limit(10)
-        .populate({ path: "author", select: ["username", "email"] })
+        .populate({ path: "author", select: ["username", "email", "avatar"] })
         .populate({ path: "hashtags", select: "hashtag" })
         .exec();
       res.status(200).json({
