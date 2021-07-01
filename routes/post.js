@@ -91,7 +91,7 @@ postRouter
           .populate({
             path: "comments",
             select: ["comment"],
-            populate: { path: "author", select: "username -_id avatar" },
+            populate: { path: "author", select: "username _id avatar" },
           })
           .execPopulate();
         res.status(200).json({ success: true, post });
