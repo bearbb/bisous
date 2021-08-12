@@ -50,15 +50,18 @@ let options = {
 };
 
 const secureServer = https.createServer(options, app);
+app.set("secureServer", secureServer);
 
 // init socket io
-const io = require("socket.io")(secureServer, {
-  cors: {
-    origin: "http://localhost:3000",
-  },
-});
-//money line => export io in app.set()
-app.set("socketIO", io);
+// const io = require("socket.io")(secureServer, {
+//   cors: {
+//     origin: "http://localhost:3000",
+//   },
+// });
+// //money line => export io in app.set()
+// app.set("socketIO", io);
+
+const io = require("../socketServer/socketServer.js");
 
 //Listen on provided port
 secureServer.listen(app.get("secPort"), app.get("host"), () => {
