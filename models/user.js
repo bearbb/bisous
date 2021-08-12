@@ -34,7 +34,7 @@ const User = new Schema(
     },
     avatar: {
       type: String,
-      default: "60dac0a31fc8b842473cd857",
+      default: "60dd3e16784646034844a4e8",
     },
   },
   { timestamps: true }
