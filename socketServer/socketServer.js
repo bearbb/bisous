@@ -19,6 +19,7 @@ io.on("connection", (socket) => {
   socket.on("authenticateFromClient", ({ uid }) => {
     socket.userId = uid;
     socket.join(uid.toString());
+    socket.emit("roomJoined", { isJoined: true });
     console.log("Socket joined room ", uid);
     socket.auth = true;
   });
@@ -30,6 +31,9 @@ io.on("connection", (socket) => {
     console.log("message forwarded");
   });
 
+  socket.on("disconnect", () => {
+    console.log("socket disconnected");
+  });
   //time out if client not send
   setTimeout(() => {
     if (!socket.auth) {
