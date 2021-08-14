@@ -47,6 +47,7 @@ messageRouter
     try {
       const senderID = `${req.user._id}`;
       const receiverID = `${req.params.receiverId}`;
+      const filterDate = `${req.body.filterDate}`;
       //check if receiver exist
       let receiverDoc = await User.findById(req.params.receiverId).lean();
       if (receiverDoc) {
@@ -54,12 +55,14 @@ messageRouter
         //find all document contain array that contain both userId
         let messages = await Message.find({
           chatParticipants: { $all: [senderID, receiverID] },
+          //filter out only message created before filterDate
+          createdAt: { $lt: ISODate(filterDate) },
         })
           .select("message createdAt sender receiver _id")
           .sort({ createdAt: -1 })
           .populate({ path: "sender", select: "username _id" })
           .populate({ path: "receiver", select: "username _id" })
-          .limit(10)
+          .limit(20)
           .exec();
         res.status(200).json({ messages });
       } else {
