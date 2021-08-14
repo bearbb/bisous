@@ -41,10 +41,11 @@ io.on("connection", (socket) => {
             participants: [`${sender.userId}`, `${receiver.userId}`],
           });
           messageDoc = await messageDoc.save();
+		console.log(messageDoc);
           //forward msg now
           socket
             .to(receiver.userId.toString())
-            .emit("incomingMessage", { sender, receiver, message });
+            .emit("incomingMessage", { sender, receiver, message, createdAt: messageDoc.createdAt });
           console.log("message forwarded");
         }
       }
