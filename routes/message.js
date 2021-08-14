@@ -55,10 +55,10 @@ messageRouter
         let messages = await Message.find({
           chatParticipants: { $all: [senderID, receiverID] },
         })
-          .select("message createdAt sender receiver -_id")
+          .select("message createdAt sender receiver _id")
           .sort({ createdAt: -1 })
-          .populate({ path: "sender", select: "username -_id" })
-          .populate({ path: "receiver", select: "username -_id" })
+          .populate({ path: "sender", select: "username _id" })
+          .populate({ path: "receiver", select: "username _id" })
           .limit(10)
           .exec();
         res.status(200).json({ messages });
