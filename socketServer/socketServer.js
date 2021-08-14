@@ -38,14 +38,17 @@ io.on("connection", (socket) => {
             sender: `${sender.userId}`,
             receiver: `${receiver.userId}`,
             message: message,
-            participants: [`${sender.userId}`, `${receiver.userId}`],
+            chatParticipants: [`${sender.userId}`, `${receiver.userId}`],
           });
           messageDoc = await messageDoc.save();
 		console.log(messageDoc);
           //forward msg now
-          socket
-            .to(receiver.userId.toString())
-            .emit("incomingMessage", { sender, receiver, message, createdAt: messageDoc.createdAt });
+          socket.to(receiver.userId.toString()).emit("incomingMessage", {
+            sender,
+            receiver,
+            message,
+            createdAt: messageDoc.createdAt,
+          });
           console.log("message forwarded");
         }
       }

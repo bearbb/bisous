@@ -23,7 +23,7 @@ messageRouter
             sender: `${req.user._id}`,
             receiver: req.params.receiverId,
             message: req.body.message,
-            participants: [`${req.user._id}`, req.params.receiverId],
+            chatParticipants: [`${req.user._id}`, req.params.receiverId],
           });
           message = await message.save();
           console.log("Message doc created");
