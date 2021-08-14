@@ -43,7 +43,7 @@ const corsOptions = {
   },
   credentials: true,
 };
-app.use(cors(corsOptions2));
+app.use(cors(corsOptions1));
 //connect to mongodb
 mongoose.connect(config.mongodb.url, {
   useNewUrlParser: true,

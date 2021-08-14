@@ -54,6 +54,7 @@ messageRouter
         //find all document contain array that contain both userId
         let messages = await Message.find({
           chatParticipants: { $all: [senderID, receiverID] },
+
         })
           .select("message createdAt sender receiver _id")
           .sort({ createdAt: -1 })
