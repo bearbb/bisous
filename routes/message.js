@@ -56,7 +56,7 @@ messageRouter
         let messages = await Message.find({
           chatParticipants: { $all: [senderID, receiverID] },
           //filter out only message created before filterDate
-          createdAt: { $lt: ISODate(filterDate) },
+          createdAt: { $lt: new ISODate(filterDate) },
         })
           .select("message createdAt sender receiver _id")
           .sort({ createdAt: -1 })
