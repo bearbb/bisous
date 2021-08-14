@@ -41,13 +41,15 @@ messageRouter
         message: "Something went wrong, please try again",
       });
     }
-  })
+  });
+messageRouter
+  .route("/t/:receiverId/:filterDate")
   //fetch message from current chat attendants
   .get(authenticate.verifyUser, verify.verifyReceiverId, async (req, res) => {
     try {
       const senderID = `${req.user._id}`;
       const receiverID = `${req.params.receiverId}`;
-      const filterDate = `${req.body.filterDate}`;
+      const filterDate = `${req.params.filterDate}`;
       //check if receiver exist
       let receiverDoc = await User.findById(req.params.receiverId).lean();
       if (receiverDoc) {
@@ -56,7 +58,7 @@ messageRouter
         let messages = await Message.find({
           chatParticipants: { $all: [senderID, receiverID] },
           //filter out only message created before filterDate
-          createdAt: { $lt: new ISODate(filterDate) },
+          createdAt: { $lt: new Date(filterDate) },
         })
           .select("message createdAt sender receiver _id")
           .sort({ createdAt: -1 })
@@ -76,6 +78,7 @@ messageRouter
       });
     }
   });
+
 messageRouter
   .route("/t/:receiverId/:messageId")
   //delete message route (only if the diff in min between current time and created it is less than 5)

@@ -41,6 +41,7 @@ io.on("connection", (socket) => {
             chatParticipants: [`${sender.userId}`, `${receiver.userId}`],
           });
           messageDoc = await messageDoc.save();
+		console.log(messageDoc);
           //forward msg now
           socket.to(receiver.userId.toString()).emit("incomingMessage", {
             sender,
