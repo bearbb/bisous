@@ -1,6 +1,8 @@
 const { app } = require("../app");
 const secureServer = app.get("secureServer");
 const cookie = require("cookie");
+const Message = require("../models/message");
+const User = require("../models/user");
 
 //init socket server
 
@@ -24,11 +26,32 @@ io.on("connection", (socket) => {
     socket.auth = true;
   });
 
-  socket.on("privateMessage", ({ sender, receiver, message }) => {
-    socket
-      .to(receiver.userId.toString())
-      .emit("incomingMessage", { sender, receiver, message });
-    console.log("message forwarded");
+  socket.on("privateMessage", async ({ sender, receiver, message }) => {
+    try {
+      //check if receiver exist
+      let receiverDoc = await User.findById(receiver.userId).lean();
+      if (receiverDoc) {
+        //first create a new message doc on database then if create successfully then forward the msg
+        //check if msg is not an empty string
+        if (message !== "") {
+          let messageDoc = new Message({
+            sender: `${sender.userId}`,
+            receiver: `${receiver.userId}`,
+            message: message,
+            participants: [`${sender.userId}`, `${receiver.userId}`],
+          });
+          messageDoc = await messageDoc.save();
+          //forward msg now
+          socket
+            .to(receiver.userId.toString())
+            .emit("incomingMessage", { sender, receiver, message });
+          console.log("message forwarded");
+        }
+      }
+    } catch (err) {
+      socket.emit("error", "Something went wrong");
+      console.error(err);
+    }
   });
 
   socket.on("disconnect", () => {

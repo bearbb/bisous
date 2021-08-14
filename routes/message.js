@@ -13,37 +13,24 @@ messageRouter
       let receiverDoc = await User.findById(req.params.receiverId).lean();
       //receiver exists
       if (receiverDoc) {
-        //init socket and join to this userId room
-        const io = req.app.get("socketIO");
-        io.on("connection", (socket) => {
-          console.log("connected");
-          socket.join(`${req.user._id}`);
-          socket.on("disconnect", () => {
-            console.log("disconnected");
+        if (req.body.message === "") {
+          res.status(400).json({
+            success: false,
+            message: "Message content should not be empty",
           });
-          socket.on("send-chat-message", async (msg) => {
-            //check if msg is an empty string
-            msg = `${msg}`;
-            if (msg !== "") {
-              socket.emit("chat-message-error", "Message shouldn't be empty");
-            } else {
-              let message = new Message({
-                sender: `${req.user._id}`,
-                receiver: req.params.receiverId,
-                message: msg,
-                participants: [`${req.user._id}`, req.params.receiverId],
-              });
-              message = await message.save();
-              console.log("Message doc created");
-              socket.broadcast
-                .to(req.params.receiverId)
-                .emit("chat-message", msg);
-            }
+        } else {
+          let message = new Message({
+            sender: `${req.user._id}`,
+            receiver: req.params.receiverId,
+            message: req.body.message,
+            participants: [`${req.user._id}`, req.params.receiverId],
           });
-        });
-        res
-          .status(200)
-          .json({ success: true, message: "Connect successfully" });
+          message = await message.save();
+          console.log("Message doc created");
+          res
+            .status(200)
+            .json({ success: true, message: "Message created successfully" });
+        }
       } else {
         res.status(403).json({ success: false, message: "Receiver not found" });
       }
