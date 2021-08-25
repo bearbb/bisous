@@ -19,7 +19,7 @@ const notificationSchema = new Schema(
       type: Schema.ObjectId,
       ref: "User",
     },
-    notificationReceiver: {
+    owner: {
       type: Schema.ObjectId,
       ref: "User",
     },
@@ -27,4 +27,18 @@ const notificationSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Notification", notificationSchema);
+const notificationByOwnerSchema = new Schema({
+  owner: {
+    type: Schema.ObjectId,
+    ref: "User",
+  },
+  notifications: [notificationSchema],
+});
+
+const Notification = mongoose.model("Notification", notificationSchema);
+const NotificationByOwner = mongoose.model(
+  "NotificationByOwner",
+  notificationByOwnerSchema
+);
+
+module.exports = { Notification, NotificationByOwner };
