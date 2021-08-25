@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+
+//import notification model
+const Notification = require("./notification");
+
 const commentSchema = new Schema(
   {
     comment: {
@@ -17,5 +21,14 @@ const commentSchema = new Schema(
   },
   { timestamps: true }
 );
+
+//create a middleware that run after new comment be saved
+commentSchema.post("save", (doc) => {
+  console.log("new document is saved");
+  console.log(doc);
+  let newNotification = new Notification({
+    notificationCode: "COMMENT",
+  });
+});
 
 module.exports = mongoose.model("Comment", commentSchema);

@@ -26,7 +26,7 @@ messageRouter
             chatParticipants: [`${req.user._id}`, req.params.receiverId],
           });
           message = await message.save();
-          console.log("Message doc created");
+          // console.log("Message doc created");
           res
             .status(200)
             .json({ success: true, message: "Message created successfully" });
