@@ -19,6 +19,7 @@ const messageRouter = require("./routes/message");
 const socketRouter = require("./routes/socket");
 const imageRouter = require("./routes/image");
 const searchRouter = require("./routes/search");
+const notiRouter = require("./routes/notification");
 
 const app = express();
 global.CronJob = require("./cron.js");
@@ -72,5 +73,6 @@ app.use("/api/messages/", messageRouter);
 app.use("/api/socket", socketRouter);
 app.use("/api/images", imageRouter);
 app.use("/api/search", searchRouter);
+app.use("/api/notifications", notiRouter);
 
 module.exports = { app: app };
