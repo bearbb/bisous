@@ -28,7 +28,12 @@ const notificationByOwnerSchema = new Schema({
     type: Schema.ObjectId,
     ref: "User",
   },
-  notifications: [notificationSchema],
+  notifications: [
+    {
+      type: Schema.ObjectId,
+      ref: "Notification",
+    },
+  ],
 });
 
 const Notification = mongoose.model("Notification", notificationSchema);

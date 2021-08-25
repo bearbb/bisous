@@ -37,7 +37,7 @@ commentSchema.post("save", async (doc) => {
   let post = await Post.findById(doc.post);
   //find the owner to push newNoti
   let ownerNoti = await NotificationByOwner.findOne({ owner: post.author });
-  ownerNoti.notifications.push(newNotification);
+  ownerNoti.notifications.push(newNotification._id);
   ownerNoti = await ownerNoti.save();
   console.log(ownerNoti);
 });
