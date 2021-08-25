@@ -29,6 +29,7 @@ commentSchema.post("save", (doc) => {
   let newNotification = new Notification({
     notificationCode: "COMMENT",
   });
+newNotification = newNotification.save()
 });
 
 module.exports = mongoose.model("Comment", commentSchema);
