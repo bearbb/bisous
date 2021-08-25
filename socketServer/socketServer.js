@@ -8,8 +8,8 @@ const User = require("../models/user");
 
 const io = require("socket.io")(secureServer, {
   cors: {
-    //     origin: "https://swanoogie.me",
-    origin: "http://localhost:3000",
+         origin: "https://swanoogie.me",
+    //origin: "http://localhost:3000",
     credentials: true,
   },
 });
