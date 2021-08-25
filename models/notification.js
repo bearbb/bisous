@@ -19,10 +19,6 @@ const notificationSchema = new Schema(
       type: Schema.ObjectId,
       ref: "User",
     },
-    owner: {
-      type: Schema.ObjectId,
-      ref: "User",
-    },
   },
   { timestamps: true }
 );

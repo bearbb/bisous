@@ -1,5 +1,5 @@
 //import notification
-const NotificationByOwner = require("./notification");
+const { NotificationByOwner } = require("./notification");
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
