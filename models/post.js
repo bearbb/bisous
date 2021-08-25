@@ -37,4 +37,7 @@ postSchema.post("save", (doc) => {
   doc.likeCount = doc.likes.length;
   doc.commentCount = doc.comments.length;
 });
+
+//middleware to check if new like then create new notification
+
 module.exports = mongoose.model("Post", postSchema);

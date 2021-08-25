@@ -39,7 +39,6 @@ commentSchema.post("save", async (doc) => {
   let ownerNoti = await NotificationByOwner.findOne({ owner: post.author });
   ownerNoti.notifications.push(newNotification._id);
   ownerNoti = await ownerNoti.save();
-  console.log(ownerNoti);
 });
 
 module.exports = mongoose.model("Comment", commentSchema);

@@ -6,11 +6,21 @@ const notiRouter = express.Router();
 
 notiRouter.route("/").get(authenticate.verifyUser, async (req, res, next) => {
   try {
-    //get all noti from notiByOwner
+    //get noti list from notiByOwner
     let notiDoc = await NotificationByOwner.findOne({
       owner: req.user._id,
     });
-    res.status(200).json({ notiDoc });
+    let notiList = notiDoc.notifications;
+    //run async map through that list and find the noti have isRead mark as false
+    let notReadNoti = await Promise.all(
+      notiList.map(async (notiId) => {
+        let notificationDoc = await Notification.findById(notiId);
+        if (!notificationDoc.isRead) {
+          return notificationDoc;
+        }
+      })
+    );
+    res.status(200).json(notReadNoti);
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false });
